@@ -14,7 +14,8 @@ data class PhotoEntity(
     val remotePath: String?,
     val tags: List<TagEntity> = listOf(),
     val isDirectory: Boolean,
-    val folderName: String?
+    val folderName: String?,
+    val isRegistered: Boolean = false
 ) : Parcelable
 
 @Parcelize
@@ -28,13 +29,27 @@ class GetPhotosFromGalleryUC(
     override fun execute(params: String?): Single<List<PhotoEntity>> {
         params ?: return Single.error(UseCaseParameterNullPointerException())
         return Single.just(photoRepository.createGridItems(params))
+            .flatMap { photoFromGallery ->
+                photoRepository.getRegisteredPhotos(query = null, path = params)
+                    .map { registeredPhotos ->
+                        photoFromGallery.map {
+                            if (registeredPhotos.map { it.path }.contains(it.path)) {
+                                it.copy(
+                                    isRegistered = true
+                                )
+                            } else {
+                                it
+                            }
+                        }
+                    }
+            }
     }
 }
 
 class GetRegisteredPhotosUC(val photoRepository: GalleryRepository) :
     UseCaseSingle<String, List<PhotoEntity>> {
     override fun execute(query: String?): Single<List<PhotoEntity>> {
-        return photoRepository.getRegisteredPhotos(query)
+        return photoRepository.getRegisteredPhotos(query = query, path = null)
             .map { it.sortedByDescending { it.tags.size } }
     }
 }

@@ -14,7 +14,7 @@ import java.io.FileFilter
 interface GalleryRepository {
 
     fun createGridItems(params: String): List<PhotoEntity>
-    fun getRegisteredPhotos(query: String?): Single<List<PhotoEntity>>
+    fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>>
     fun register(params: PhotoEntity): Single<PhotoEntity>
 }
 
@@ -61,18 +61,25 @@ class LocalGalleryRepository(
         return items.map { PhotoEntity(it.path, null, listOf(), it.isDirectory, it.folderName) }
     }
 
-    override fun getRegisteredPhotos(query: String?): Single<List<PhotoEntity>> {
+    override fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>> {
         return Single.defer {
-            if (query == null)
-                Single.just(appDatabase.photoDao().getPhotoWithTags())
-                    .map { it.filter { it.tags.isNotEmpty() }.map { it.toEntity() } }
-            else
-                Single.just(appDatabase.tagDao().getTagWithPhotos("%${query}%"))
+            when {
+                query != null -> Single.just(appDatabase.tagDao().getTagWithPhotos("%${query}%"))
                     .flatMap { tags ->
                         val paths = tags.flatMap { it.photos }.map { it.path }
                         Single.just(appDatabase.photoDao().getPhotoWithTagsById(paths))
                             .map { it.filter { it.tags.isNotEmpty() }.map { it.toEntity() } }
                     }
+                path != null -> {
+                    Single.just(appDatabase.photoDao().getPhotoWithTagsByPath("%${path}%"))
+                        .map { it.filter { it.tags.isNotEmpty() }.map { it.toEntity() } }
+                }
+                else -> {
+                    Single.just(appDatabase.photoDao().getPhotoWithTags())
+                        .map { it.filter { it.tags.isNotEmpty() }.map { it.toEntity() } }
+                }
+            }
+
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

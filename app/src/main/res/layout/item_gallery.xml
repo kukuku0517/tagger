@@ -17,4 +17,9 @@
         android:id="@+id/mTvGallerySelected"
         android:visibility="gone"
         android:layout_height="wrap_content"/>
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/black50"
+        android:id="@+id/mTintGallery"
+        android:layout_height="match_parent"/>
 </FrameLayout>

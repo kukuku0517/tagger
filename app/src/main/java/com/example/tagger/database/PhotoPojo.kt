@@ -58,6 +58,10 @@ interface PhotoDao {
     fun getPhotoWithTags(): List<PhotoWithTags>
 
     @Transaction
+    @Query("SELECT * FROM photo where path like :path")
+    fun getPhotoWithTagsByPath(path:String): List<PhotoWithTags>
+
+    @Transaction
     @Query("SELECT * FROM photo where path IN (:ids)")
     fun getPhotoWithTagsById(ids:List<String>): List<PhotoWithTags>
 

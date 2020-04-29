@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.tagger.R
 import com.example.tagger.main.MainPagerAdapter
@@ -61,12 +62,14 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                             containerView.mTvGalleryFolderName.show(false)
                             Glide.with(context).load(item.photoEntity.path)
                                 .into(containerView.mIvGallery)
+                            containerView.mTintGallery.show(item.photoEntity.isRegistered)
                             containerView.mTvGallerySelected.show(item.isSelected)
+
                         } else {
+                            containerView.mTintGallery.show(false)
                             containerView.mIvGallery.setImageDrawable(null)
                             containerView.mTvGalleryFolderName.show()
                             containerView.mTvGalleryFolderName.text = item.photoEntity.folderName
-
                         }
                     }
 
@@ -81,13 +84,15 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                     }
                 })
             mRvGallery.adapter = adapter
-            mRvGallery.layoutManager = GridLayoutManager(context, 3)
+            mRvGallery.layoutManager =
+                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         }
 
         mTvGalleryRegisterSelected.setOnClickListener {
             fragmentManager?.let { it1 ->
                 TagBottomSheetDialog.create(galleryViewModel.selectedPhotos.toMutableList()).show(
-                    it1, "tag")
+                    it1, "tag"
+                )
             }
         }
 
