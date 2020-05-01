@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.auth.User
 import com.google.gson.Gson
+import com.project.tagger.database.FirebaseConstants.Companion.USER
 import io.reactivex.Completable
 
 class UserRepository(
@@ -13,7 +14,6 @@ class UserRepository(
     val preferenceModel: PreferenceModel
 ) {
     companion object {
-        const val USER = "USER"
 
         const val USER_PREF = "USER_PREF"
     }
@@ -28,12 +28,12 @@ class UserRepository(
             }
     }
 
-    fun getUser(): User? {
+    fun getUser(): UserEntity? {
         val userString = preferenceModel.getPref(USER_PREF, "")
         return if (userString.isEmpty()){
             null
         }else{
-            val user = Gson().fromJson<User>(userString, UserEntity::class.java)
+            val user = Gson().fromJson<UserEntity>(userString, UserEntity::class.java)
             user
         }
     }

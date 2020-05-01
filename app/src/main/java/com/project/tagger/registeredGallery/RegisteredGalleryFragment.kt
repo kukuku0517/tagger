@@ -109,6 +109,10 @@ class RegisteredGalleryFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
 
+        galleryViewModel.currentRepo.observe(context  as LifecycleOwner, Observer {
+            mTvRegGalRepoName.text = it.name
+        })
+
     }
 
     override fun onResume() {

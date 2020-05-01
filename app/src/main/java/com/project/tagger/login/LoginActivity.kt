@@ -23,6 +23,7 @@ import org.koin.android.ext.android.inject
 
 class LoginActivity : AppCompatActivity() {
     val updateUserUC: UpdateUserUC by inject()
+    val getUserUC: GetUserUC by inject()
 
     companion object {
         const val RC_SIGN_IN = 1000
@@ -30,17 +31,31 @@ class LoginActivity : AppCompatActivity() {
 
     val auth = FirebaseAuth.getInstance()
 
-    lateinit var gso : GoogleSignInOptions
-    lateinit var googleSignInClient :GoogleSignInClient
+    lateinit var gso: GoogleSignInOptions
+    lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        getUserUC.execute()
+            .subscribeBy(onSuccess = {
+                startMainActivity()
+            }, onComplete = {
+                handleOnCreate()
+            }, onError = {
+                handleOnCreate()
+            })
+
+
+    }
+
+    private fun handleOnCreate() {
         setContentView(R.layout.activity_login)
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-      googleSignInClient = GoogleSignIn.getClient(this, gso)
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         mTvSignIn.setOnClickListener {
             signIn()
@@ -101,12 +116,16 @@ class LoginActivity : AppCompatActivity() {
             UserEntity(
                 name = user.displayName,
                 email = user.email!!,
-                profileUrl = user.photoUrl?.path
+                profileUrl = user.photoUrl?.toString()
             )
         ).subscribeBy(onSuccess = {
-            startActivity(Intent(this, MainActivity::class.java))
+            startMainActivity()
         }, onError = {
             Toast.makeText(this, "Login fail ${it.message}", Toast.LENGTH_LONG).show()
         })
+    }
+
+    private fun startMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
     }
 }

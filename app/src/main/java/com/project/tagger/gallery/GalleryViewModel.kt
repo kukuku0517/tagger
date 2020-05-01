@@ -3,15 +3,18 @@ package com.project.tagger.gallery
 import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.project.tagger.repo.GetReposUC
+import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.peekIfNotEmpty
 import com.project.tagger.util.tag
+import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import java.util.*
 import kotlin.math.min
 
 class GalleryViewModel(
     val getPhotosFromGalleryUC: GetPhotosFromGalleryUC,
-    val registeredPhotosUC: RegisterPhotoUc
+    val getReposUC: GetReposUC
 ) {
     val photos = MutableLiveData<List<PhotoViewItem>>()
     val hasSelectedPhotos = MutableLiveData<Boolean>().apply { value = false }
@@ -20,9 +23,20 @@ class GalleryViewModel(
     val folderStack = Stack<String>()
 
 
+    var currentRepo: RepoEntity? = null
+
     fun init(path: String = defaultPath, back: Boolean = false) {
 
-        getPhotosFromGalleryUC.execute(path)
+        if (currentRepo == null) {
+            getReposUC.execute()
+                .map { it.first() }
+                .doOnSuccess { this.currentRepo = it }
+        } else {
+            Single.just(currentRepo)
+        }
+            .flatMap {
+                getPhotosFromGalleryUC.execute( path)
+            }
             .subscribeBy(
                 onSuccess = {
                     if (!back) {

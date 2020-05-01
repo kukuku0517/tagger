@@ -1,7 +1,9 @@
 package com.project.tagger.login
 
+import com.project.tagger.util.UseCaseMaybe
 import com.project.tagger.util.UseCaseParameterNullPointerException
 import com.project.tagger.util.UseCaseSingle
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 data class UserEntity(
@@ -11,6 +13,24 @@ data class UserEntity(
 )
 
 class UpdateUserUC(val userRepository: UserRepository) : UseCaseSingle<UserEntity, UserEntity> {
+    override fun execute(params: UserEntity?): Single<UserEntity> {
+        params ?: return Single.error(UseCaseParameterNullPointerException())
+        return userRepository.updateUser(params)
+            .andThen(Single.just(params))
+    }
+}
+
+class GetUserUC(val userRepository: UserRepository) : UseCaseMaybe<Void, UserEntity> {
+    override fun execute(params: Void?): Maybe<UserEntity> {
+        return userRepository.getUser()?.let {
+            Maybe.just(it)
+        } ?:Maybe.empty()
+    }
+
+}
+
+
+class SignOutUC(val userRepository: UserRepository) : UseCaseSingle<UserEntity, UserEntity> {
     override fun execute(params: UserEntity?): Single<UserEntity> {
         params ?: return Single.error(UseCaseParameterNullPointerException())
         return userRepository.updateUser(params)

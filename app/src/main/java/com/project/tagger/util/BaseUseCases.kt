@@ -19,7 +19,7 @@ interface UseCaseObservable<in Params, Results> {
 }
 
 interface UseCaseMaybe<in Params, Results> {
-    operator fun invoke(params: Params? = null): Maybe<Results>
+    fun execute(params: Params? = null): Maybe<Results>
 }
 
 class UseCaseParameterNullPointerException : Exception(){

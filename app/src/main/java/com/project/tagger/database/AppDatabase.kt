@@ -6,20 +6,27 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [PhotoPojo::class, TagPOJO::class, PhotoTagJoin::class],
+    entities = [
+        PhotoPojo::class,
+        TagPOJO::class,
+        PhotoTagJoin::class,
+        RepoPojo::class,
+        RepoUserJoin::class,
+        UserPojo::class],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun photoDao(): PhotoDao
     abstract fun tagDao(): TagDao
+    abstract fun repoDao(): RepoDao
 
     companion object {
         fun getInstance(context: Context): AppDatabase {
             val db = Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java, "tagger"
-            ).build()
+            ).fallbackToDestructiveMigration().build()
             return db
         }
     }

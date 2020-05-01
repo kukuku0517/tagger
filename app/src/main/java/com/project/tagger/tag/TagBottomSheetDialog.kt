@@ -11,6 +11,7 @@ import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
+import com.project.tagger.repo.RepoEntity
 import kotlinx.android.synthetic.main.dialog_tag_bottom_sheet.*
 import org.koin.android.ext.android.inject
 import java.util.ArrayList
@@ -18,10 +19,12 @@ import java.util.ArrayList
 class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
     companion object {
         const val PHOTOS = "PHOTOS"
-        fun create(photos: List<PhotoEntity>): TagBottomSheetDialog {
+        const val REPO = "REPO"
+        fun create(photos: List<PhotoEntity>, repo:RepoEntity): TagBottomSheetDialog {
            return TagBottomSheetDialog().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(PHOTOS, photos as ArrayList<out Parcelable>)
+                    putParcelable(REPO, repo)
                 }
             }
         }
@@ -42,9 +45,12 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
         val photos: ArrayList<PhotoEntity>? = arguments?.getParcelableArrayList<PhotoEntity>(
             PHOTOS
         )
-        if (photos == null) {
+        val repo = arguments?.getParcelable<RepoEntity>(REPO)
+        if (photos == null || repo == null ) {
             dismiss()
         }
+
+        tagViewModel.repo = repo
 
         tagViewModel.setPhotos(photos)
 

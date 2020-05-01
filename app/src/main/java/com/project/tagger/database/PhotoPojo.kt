@@ -8,7 +8,8 @@ data class PhotoPojo(
     val path: String,
     val remotePath: String?,
     val isDirectory: Boolean,
-    val folderName: String?
+    val folderName: String?,
+    val repoId: Int? = null
 )
 
 @Entity(tableName = "tag")
@@ -58,11 +59,16 @@ interface PhotoDao {
 
     @Transaction
     @Query("SELECT * FROM photo where path like :path")
-    fun getPhotoWithTagsByPath(path:String): List<PhotoWithTags>
+    fun getPhotoWithTagsByPath(path: String): List<PhotoWithTags>
 
     @Transaction
     @Query("SELECT * FROM photo where path IN (:ids)")
-    fun getPhotoWithTagsById(ids:List<String>): List<PhotoWithTags>
+    fun getPhotosWithTagsByIds(ids: List<String>): List<PhotoWithTags>
+
+    @Transaction
+    @Query("SELECT * FROM photo where path = :id")
+    fun getPhotoWithTagsById(id: String): PhotoWithTags?
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun createOrUpdate(toPojo: PhotoPojo)
@@ -83,7 +89,7 @@ interface TagDao {
 
     @Transaction
     @Query("SELECT * FROM tag where tag like :query")
-    fun getTagWithPhotos(query:String): List<TagWithPhotos>
+    fun getTagWithPhotos(query: String): List<TagWithPhotos>
 
 
 }

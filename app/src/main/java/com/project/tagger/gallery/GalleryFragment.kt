@@ -89,7 +89,7 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
 
         mTvGalleryRegisterSelected.setOnClickListener {
             fragmentManager?.let { it1 ->
-                TagBottomSheetDialog.create(galleryViewModel.selectedPhotos.toMutableList()).show(
+                TagBottomSheetDialog.create(galleryViewModel.selectedPhotos.toMutableList(), galleryViewModel.currentRepo!!).show(
                     it1, "tag"
                 )
             }
