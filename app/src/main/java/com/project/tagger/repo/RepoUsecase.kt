@@ -10,12 +10,13 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class RepoEntity(
-    val id: Int = -1 ,
+    val id: Int = -1,
     val owner: String = "",
     val visitor: List<String> = listOf(),
     val photos: List<PhotoEntity> = listOf(),
     val name: String = "",
-    val desc: String = ""
+    val desc: String = "",
+    val isBackUp: Boolean = false
 ) : Parcelable
 
 
@@ -24,16 +25,18 @@ class GetReposUC(
     val getUserUC: GetUserUC
 ) : UseCaseSingle<Void, List<RepoEntity>> {
     override fun execute(params: Void?): Single<List<RepoEntity>> {
-        return getUserUC.execute().flatMapSingle { user ->
-            repoRepository.getRepos(user)
-        }
+        return getUserUC.execute()
+            .flatMapSingle { user ->
+                repoRepository.getRepos(user)
+
+            }
     }
 }
 
-class PostRepoUC() : UseCaseSingle<RepoEntity, RepoEntity> {
+class PostRepoUC(val repoRepository: RepoRepository) : UseCaseSingle<RepoEntity, RepoEntity> {
     override fun execute(params: RepoEntity?): Single<RepoEntity> {
         params ?: return Single.error(UseCaseParameterNullPointerException())
-        TODO()
+        return repoRepository.postRepos(params)
     }
 
 }

@@ -2,6 +2,7 @@ package com.project.tagger.gallery
 
 import android.os.Parcelable
 import com.project.tagger.repo.RepoEntity
+import com.project.tagger.repo.RepoRepository
 import com.project.tagger.util.UseCaseParameterNullPointerException
 import com.project.tagger.util.UseCaseSingle
 import io.reactivex.Observable
@@ -11,18 +12,18 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class PhotoEntity(
-    val path: String,
-    val remotePath: String?,
+    val path: String = "",
+    val remotePath: String? = "",
     val tags: List<TagEntity> = listOf(),
-    val isDirectory: Boolean,
-    val folderName: String?,
+    val isDirectory: Boolean = false,
+    val folderName: String? = "",
     val isRegistered: Boolean = false,
     val repoId: Int? = null
 ) : Parcelable
 
 @Parcelize
 data class TagEntity(
-    val tag: String
+    val tag: String = ""
 ) : Parcelable
 
 class GetPhotosFromGalleryUC(
@@ -58,7 +59,10 @@ class GetRegisteredPhotosUC(val photoRepository: GalleryRepository) :
 }
 
 
-class RegisterTagsOnPhotosUC(val photoRepository: GalleryRepository) :
+class RegisterTagsOnPhotosUC(
+    val photoRepository: GalleryRepository,
+    val repoRepository: RepoRepository
+) :
     UseCaseSingle<RegisterTagsOnPhotosUC.RegisterTagParam, List<PhotoEntity>> {
 
     data class RegisterTagParam(
@@ -81,9 +85,29 @@ class RegisterTagsOnPhotosUC(val photoRepository: GalleryRepository) :
                     tags = it.tags.toMutableSet().apply { addAll(tags) }.toList()
                 )
             }
+
+        val isBackUp = repo.isBackUp
+
         return Observable.fromIterable(taggedPhotos)
+            .flatMapSingle {
+                if (true && it.remotePath.isNullOrEmpty()) {
+                    photoRepository.uploadPhoto(repo, it)
+                } else {
+                    Single.just(it)
+                }
+            }
             .flatMapSingle { photoRepository.register(repo, it) }
             .toList()
+            .flatMap { photos ->
+                if (true) {
+                    repoRepository.postRepos(
+                        repo.copy(photos = repo.photos.toMutableList().apply { addAll(photos)})
+                    ).map { photos }
+                } else {
+                    Single.just(photos)
+                }
+            }
+
     }
 
 }

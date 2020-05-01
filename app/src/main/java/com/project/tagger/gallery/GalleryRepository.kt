@@ -1,7 +1,9 @@
 package com.project.tagger.gallery
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
+import com.google.firebase.storage.FirebaseStorage
 import com.project.tagger.database.*
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.tag
@@ -10,21 +12,24 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileFilter
+import java.lang.Exception
 
 
 interface GalleryRepository {
 
-    fun createGridItems( params: String): List<PhotoEntity>
+    fun createGridItems(params: String): List<PhotoEntity>
     fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>>
-    fun register(repo:RepoEntity, params: PhotoEntity): Single<PhotoEntity>
+    fun register(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity>
+    fun uploadPhoto(repo: RepoEntity, photoEntity: PhotoEntity): Single<PhotoEntity>
 }
 
 class LocalGalleryRepository(
     val context: Context,
     val appDatabase: AppDatabase
 ) : GalleryRepository {
+    val storage = FirebaseStorage.getInstance()
 
-    override fun createGridItems( params: String): List<PhotoEntity> {
+    override fun createGridItems(params: String): List<PhotoEntity> {
         val items: MutableList<GridViewItem> = ArrayList<GridViewItem>()
         Log.i(tag(), "open file $params")
         val files: Array<File> = File(params)
@@ -59,7 +64,16 @@ class LocalGalleryRepository(
                 )
             }
         }
-        return items.map { PhotoEntity(it.path, null, listOf(), it.isDirectory, it.folderName, repoId = null) }
+        return items.map {
+            PhotoEntity(
+                it.path,
+                null,
+                listOf(),
+                it.isDirectory,
+                it.folderName,
+                repoId = null
+            )
+        }
     }
 
     override fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>> {
@@ -87,9 +101,41 @@ class LocalGalleryRepository(
 
     }
 
+    override fun uploadPhoto(repo: RepoEntity, photoEntity: PhotoEntity): Single<PhotoEntity> {
+        return Single.create<PhotoEntity> { emitter ->
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference
+
+            var file = Uri.fromFile(File(photoEntity.path))
+            val fileRef = storageRef.child("images/${repo.owner}/${file.lastPathSegment}")
+            val uploadTask = fileRef.putFile(file)
+
+            val urlTask = uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        emitter.onError(it)
+                    } ?: run {
+                        emitter.onError(Exception("Unknown firebase storage exception"))
+                    }
+                }
+                fileRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUri = task.result
+                    val photoEntityWithRemote =
+                        photoEntity.copy(remotePath = downloadUri.toString())
+                    emitter.onSuccess(photoEntityWithRemote)
+                } else {
+                    emitter.onError(Exception("Unknown firebase storage exception"))
+                }
+            }
+        }
+    }
+
     override fun register(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity> {
         return Single.defer {
             val photoWithTags = params.toPojo()
+
             appDatabase.photoDao().createOrUpdate(photoWithTags.photos)
             photoWithTags.tags.forEach {
                 appDatabase.tagDao().createOrUpdate(it)
@@ -103,10 +149,8 @@ class LocalGalleryRepository(
                 )
             }
 
-
             Single.just(photoWithTags.toEntity())
-        }
-            .subscribeOn(Schedulers.io())
+        }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
 

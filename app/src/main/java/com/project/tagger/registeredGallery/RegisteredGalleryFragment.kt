@@ -1,6 +1,9 @@
 package com.project.tagger.registeredGallery
 
+import android.R.attr.radius
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -9,22 +12,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.annotation.NonNull
 import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.BitmapImageViewTarget
+import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.ViewTarget
+import com.google.android.material.chip.Chip
 import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
-import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.fragment_registered_gallery.*
 import kotlinx.android.synthetic.main.item_registered_gallery.view.*
 import org.koin.android.ext.android.inject
 import java.io.File
+
 
 class RegisteredGalleryFragment : Fragment() {
     val galleryViewModel: RegisteredGalleryViewModel by inject()
@@ -60,8 +73,14 @@ class RegisteredGalleryFragment : Fragment() {
 
                     override fun onBindView(containerView: View, item: PhotoEntity) {
                         if (!item.isDirectory) {
-                            Glide.with(context).load(item.path).apply(RequestOptions().centerCrop())
+
+                            Glide
+                                .with(context)
+                                .load(item.path)
+                                .error(Glide.with(context).load(item.remotePath))
+                                .apply(RequestOptions().centerCrop())
                                 .into(containerView.mIvRegGalGallery)
+
                             containerView.mCgRegGalTags.apply {
                                 removeAllViews()
                                 item.tags.forEach {
@@ -90,7 +109,8 @@ class RegisteredGalleryFragment : Fragment() {
                     }
                 })
             mRvRegGal.adapter = adapter
-            mRvRegGal.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            mRvRegGal.layoutManager =
+                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         }
 
         mEtRegGalSearch.setOnEditorActionListener { v, actionId, event ->
@@ -109,7 +129,7 @@ class RegisteredGalleryFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
 
-        galleryViewModel.currentRepo.observe(context  as LifecycleOwner, Observer {
+        galleryViewModel.currentRepo.observe(context as LifecycleOwner, Observer {
             mTvRegGalRepoName.text = it.name
         })
 

@@ -38,7 +38,7 @@ class GlobalApp : Application() {
 val module = module {
     factory { GetPhotosFromGalleryUC(get()) }
     factory { GetRegisteredPhotosUC(get()) }
-    factory { RegisterTagsOnPhotosUC(get()) }
+    factory { RegisterTagsOnPhotosUC(get(),get()) }
     factory { UpdateUserUC(get()) }
     factory { GetUserUC(get()) }
     factory { GetReposUC(get(),get()) }
