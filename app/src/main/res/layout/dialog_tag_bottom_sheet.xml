@@ -1,22 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@color/colorPrimary"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Tag your photos"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
     <com.google.android.material.chip.ChipGroup
-        android:layout_width="match_parent"
         android:id="@+id/mCgTag"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/mEtTag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/choose_a_tag"
         android:imeOptions="actionSearch"
         android:inputType="text" />
-    <TextView
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:text="완료"
-        android:id="@+id/mTvTagComplete"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/mTvTagComplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="8dp"
+            android:text="완료"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/mPbTagLoading"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/mTvTagComplete"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@id/mTvTagComplete" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

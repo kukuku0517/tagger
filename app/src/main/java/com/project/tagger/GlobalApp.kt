@@ -42,10 +42,11 @@ val module = module {
     factory { UpdateUserUC(get()) }
     factory { GetUserUC(get()) }
     factory { GetReposUC(get(),get()) }
+    factory { GetPopularTagsUC(get()) }
 
     factory { GalleryViewModel(get(), get()) }
 
-    factory { TagViewModel(get()) }
+    factory { TagViewModel(get(),get()) }
 
     factory { RegisteredGalleryViewModel(get(),get()) }
 

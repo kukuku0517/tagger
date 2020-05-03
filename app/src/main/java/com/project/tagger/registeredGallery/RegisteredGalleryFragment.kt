@@ -127,6 +127,14 @@ class RegisteredGalleryFragment : Fragment() {
 
                         }
                     }
+
+                    override fun setItem(
+                        adapter: SimpleRecyclerViewAdapter<PhotoEntity>,
+                        oldItems: List<PhotoEntity>,
+                        newItems: List<PhotoEntity>
+                    ) {
+                        adapter.notifyDataSetChanged()
+                    }
                 })
             mRvRegGal.adapter = adapter
             mRvRegGal.layoutManager =
@@ -170,11 +178,21 @@ class RegisteredGalleryFragment : Fragment() {
         galleryViewModel.photos.observe(context as LifecycleOwner, Observer {
             Log.i(tag(), "get new photos")
             adapter.provider.items = it
-            adapter.notifyDataSetChanged()
+
         })
 
         galleryViewModel.currentRepo.observe(context as LifecycleOwner, Observer {
             mTvRegGalRepoName.text = it.name
+        })
+
+        galleryViewModel.isBackUp.observe(context as LifecycleOwner, Observer {isBackUp ->
+            if (isBackUp){
+                mTvRegGalPro.text = "PRO"
+                mTvRegGalPro.setTextColor(ContextCompat.getColor(context!!, R.color.red))
+            }else{
+                mTvRegGalPro.text = "BASIC"
+                mTvRegGalPro.setTextColor(ContextCompat.getColor(context!!, R.color.grey))
+            }
         })
 
     }

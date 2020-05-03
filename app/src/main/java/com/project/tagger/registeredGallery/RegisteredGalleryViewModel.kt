@@ -16,12 +16,16 @@ class RegisteredGalleryViewModel(
 ) {
     val photos = MutableLiveData<List<PhotoEntity>>()
     val currentRepo = MutableLiveData<RepoEntity>()
+    val isBackUp = MutableLiveData<Boolean>().apply { value = false }
 
 
     private fun getRepo(): Single<RepoEntity> {
         return getReposUC.execute()
             .map { it.first() }
-            .doOnSuccess { this.currentRepo.value = it }
+            .doOnSuccess {
+                this.currentRepo.value = it
+                this.isBackUp.value = it.isBackUp
+            }
 
     }
 

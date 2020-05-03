@@ -8,6 +8,7 @@ import com.project.tagger.util.UseCaseSingle
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.android.parcel.Parcelize
+import java.lang.Exception
 
 
 @Parcelize
@@ -23,7 +24,8 @@ data class PhotoEntity(
 
 @Parcelize
 data class TagEntity(
-    val tag: String = ""
+    val tag: String = "",
+    val count: Int
 ) : Parcelable
 
 class GetPhotosFromGalleryUC(
@@ -78,6 +80,10 @@ class RegisterTagsOnPhotosUC(
         val photos = params.photos
         val repo = params.repo
 
+        if (tags.isEmpty()) {
+            return Single.error(Exception("At least 1 tag is required"))
+        }
+
         val taggedPhotos =
             photos.map {
                 it.copy(
@@ -101,7 +107,7 @@ class RegisterTagsOnPhotosUC(
             .flatMap { photos ->
                 if (true) {
                     repoRepository.postRepos(
-                        repo.copy(photos = repo.photos.toMutableList().apply { addAll(photos)})
+                        repo.copy(photos = repo.photos.toMutableList().apply { addAll(photos) })
                     ).map { photos }
                 } else {
                     Single.just(photos)
@@ -110,4 +116,12 @@ class RegisterTagsOnPhotosUC(
 
     }
 
+}
+
+class GetPopularTagsUC(val galleryRepository: GalleryRepository) :
+    UseCaseSingle<Void, List<TagEntity>> {
+    override fun execute(params: Void?): Single<List<TagEntity>> {
+        return galleryRepository.getTags()
+            .map { it.sortedByDescending { it.count } }
+    }
 }

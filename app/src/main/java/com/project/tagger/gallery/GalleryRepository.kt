@@ -21,6 +21,7 @@ interface GalleryRepository {
     fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>>
     fun register(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity>
     fun uploadPhoto(repo: RepoEntity, photoEntity: PhotoEntity): Single<PhotoEntity>
+    fun getTags(): Single<List<TagEntity>>
 }
 
 class LocalGalleryRepository(
@@ -79,7 +80,7 @@ class LocalGalleryRepository(
     override fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>> {
         return Single.defer {
             when {
-                query != null -> Single.just(appDatabase.tagDao().getTagWithPhotos("%${query}%"))
+                query != null -> Single.just(appDatabase.tagDao().getTagWithPhotosByQuery("%${query}%"))
                     .flatMap { tags ->
                         val paths = tags.flatMap { it.photos }.map { it.path }
                         Single.just(appDatabase.photoDao().getPhotosWithTagsByIds(paths))
@@ -172,6 +173,16 @@ class LocalGalleryRepository(
         }
     }
 
+    override fun getTags(): Single<List<TagEntity>> {
+        return Single.defer {
+            val tags = appDatabase.tagDao().getTagWithPhotos()
+            Single.just(tags.map { it.toEntity() })
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+    }
+
 
 }
 
@@ -209,5 +220,12 @@ fun PhotoWithTags.toEntity(): PhotoEntity {
 }
 
 fun TagPOJO.toEntity(): TagEntity {
-    return TagEntity(this.tag)
+    return TagEntity(this.tag, -1)
+}
+
+fun TagWithPhotos.toEntity(): TagEntity {
+    return TagEntity(
+        tag = this.tag.tag,
+        count = this.photos.size
+    )
 }

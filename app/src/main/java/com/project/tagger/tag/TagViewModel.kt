@@ -2,6 +2,7 @@ package com.project.tagger.tag
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.project.tagger.gallery.GetPopularTagsUC
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.gallery.RegisterTagsOnPhotosUC
 import com.project.tagger.gallery.TagEntity
@@ -11,37 +12,87 @@ import com.project.tagger.util.tag
 import io.reactivex.rxkotlin.subscribeBy
 import java.util.ArrayList
 
+data class TagViewItem(
+    val tag: TagEntity,
+    val isSelected: Boolean = false
+) {
+    override fun equals(other: Any?): Boolean {
+        if (other !is TagViewItem) return false
+        return tag.tag == other.tag.tag
+    }
+
+    override fun hashCode(): Int {
+        return tag.tag.hashCode()
+    }
+}
+
 class TagViewModel(
-    val registerTagsOnPhotosUC: RegisterTagsOnPhotosUC
+    val registerTagsOnPhotosUC: RegisterTagsOnPhotosUC,
+    val getPopularTagsUC: GetPopularTagsUC
 ) {
     var photos: List<PhotoEntity> = listOf()
-    val tags = MutableLiveData<List<TagEntity>>().apply { value = listOf() }
-    val finishEvent = MutableLiveEvent<Boolean>(false)
+    val tags = MutableLiveData<MutableSet<TagViewItem>>().apply { value = mutableSetOf() }
+    val finishEvent = MutableLiveEvent(false)
     var repo: RepoEntity? = null
+
+    fun init() {
+        getPopularTagsUC.execute()
+            .doOnSubscribe { isLoading.value = true }
+            .map { it.map { TagViewItem(it, isSelected = false) } }
+            .subscribeBy(
+                onSuccess = {
+                    isLoading.value = false
+                    tags.value = tags.value!!.apply { addAll(it) }.sortedBy { it.tag.tag }.toMutableSet()
+                },
+                onError = {
+                    isLoading.value = false
+                    Log.i(tag(), it.message)
+                })
+    }
+
     fun setPhotos(photos: ArrayList<PhotoEntity>?) {
         if (photos != null) {
             this.photos = photos
         }
     }
 
+    val isLoading = MutableLiveData<Boolean>().apply { value = false }
+
     fun addTag(text: String) {
-        tags.value = tags.value?.toMutableList()?.apply { add(TagEntity(text)) }
+        tags.value = tags.value!!.apply {
+            val item = TagViewItem(TagEntity(text, -1), true)
+            remove(item)
+            add(item)
+        }.sortedBy { it.tag.tag }.toMutableSet()
+    }
+
+    fun removeTag(text: String) {
+        tags.value = tags.value!!.apply {
+            val item = TagViewItem(TagEntity(text, -1), false)
+            remove(item)
+            add(item)
+        }.sortedBy { it.tag.tag }.toMutableSet()
     }
 
     fun updateTags() {
 
         registerTagsOnPhotosUC.execute(
             RegisterTagsOnPhotosUC.RegisterTagParam(
-                tags.value!!,
+                tags.value!!.filter { it.isSelected }.map { it.tag },
                 photos,
                 repo!!
             )
-        ).subscribeBy(
-            onSuccess = {
-                Log.i(tag(), "tagged ${it.size} photos")
-                finishEvent.value = true
-            }, onError = {
-                Log.i(tag(), it.message)
-            })
+        )
+            .doOnSubscribe { isLoading.value = true }
+            .subscribeBy(
+                onSuccess = {
+                    isLoading.value = false
+                    Log.i(tag(), "tagged ${it.size} photos")
+                    finishEvent.value = true
+                },
+                onError = {
+                    isLoading.value = false
+                    Log.i(tag(), it.message)
+                })
     }
 }

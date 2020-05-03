@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Tagger</string>
     <string name="search_tags">Search tags</string>
+    <string name="select_all">SELECT ALL</string>
+    <string name="navigate">NAVIGATE</string>
+    <string name="unselect_all">UNSELECT ALL</string>
+    <string name="choose_a_tag">Choose a tag</string>
 </resources>

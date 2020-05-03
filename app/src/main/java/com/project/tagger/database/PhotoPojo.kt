@@ -89,7 +89,12 @@ interface TagDao {
 
     @Transaction
     @Query("SELECT * FROM tag where tag like :query")
-    fun getTagWithPhotos(query: String): List<TagWithPhotos>
+    fun getTagWithPhotosByQuery(query: String): List<TagWithPhotos>
+
+
+    @Transaction
+    @Query("SELECT * FROM tag")
+    fun getTagWithPhotos(): List<TagWithPhotos>
 
 
 }

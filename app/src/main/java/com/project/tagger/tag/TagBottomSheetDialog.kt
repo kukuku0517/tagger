@@ -12,6 +12,7 @@ import com.project.tagger.gallery.PhotoEntity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.project.tagger.repo.RepoEntity
+import com.project.tagger.util.show
 import kotlinx.android.synthetic.main.dialog_tag_bottom_sheet.*
 import org.koin.android.ext.android.inject
 import java.util.ArrayList
@@ -20,8 +21,8 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
     companion object {
         const val PHOTOS = "PHOTOS"
         const val REPO = "REPO"
-        fun create(photos: List<PhotoEntity>, repo:RepoEntity): TagBottomSheetDialog {
-           return TagBottomSheetDialog().apply {
+        fun create(photos: List<PhotoEntity>, repo: RepoEntity): TagBottomSheetDialog {
+            return TagBottomSheetDialog().apply {
                 arguments = Bundle().apply {
                     putParcelableArrayList(PHOTOS, photos as ArrayList<out Parcelable>)
                     putParcelable(REPO, repo)
@@ -46,26 +47,42 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
             PHOTOS
         )
         val repo = arguments?.getParcelable<RepoEntity>(REPO)
-        if (photos == null || repo == null ) {
+        if (photos == null || repo == null) {
             dismiss()
         }
 
         tagViewModel.repo = repo
 
+        tagViewModel.init()
         tagViewModel.setPhotos(photos)
 
-        tagViewModel.tags.observe(this, Observer {tags ->
+        tagViewModel.tags.observe(this, Observer { tags ->
             mCgTag.removeAllViews()
-            tags.forEach {
+            tags.forEach { tag ->
                 mCgTag.addView(
-                    Chip(context).apply { text = it.tag}
+                    Chip(context).apply {
+                        text = tag.tag.tag
+                        isSelected = tag.isSelected
+                        setOnClickListener {
+                            if (this.isSelected) {
+                                tagViewModel.removeTag(tag.tag.tag)
+                            } else {
+                                tagViewModel.addTag(tag.tag.tag)
+                            }
+                            this.isSelected = !this.isSelected
+                        }
+                    }
                 )
             }
         })
         tagViewModel.finishEvent.observe(this, Observer {
-            if (it){
+            if (it) {
                 dismiss()
             }
+        })
+        tagViewModel.isLoading.observe(this, Observer {
+            mTvTagComplete.visibility = if (it) View.INVISIBLE else View.VISIBLE
+            mPbTagLoading.show(it)
         })
 
         mEtTag.setOnEditorActionListener { v, actionId, event ->

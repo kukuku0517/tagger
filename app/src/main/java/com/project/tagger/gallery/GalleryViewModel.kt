@@ -21,6 +21,7 @@ class GalleryViewModel(
     val selectedPhotos = mutableSetOf<PhotoEntity>()
     val defaultPath: String = Environment.getExternalStorageDirectory().path
     val folderStack = Stack<String>()
+    val currentPath = MutableLiveData<String>().apply { value = defaultPath }
 
 
     var currentRepo: RepoEntity? = null
@@ -35,8 +36,9 @@ class GalleryViewModel(
             Single.just(currentRepo)
         }
             .flatMap {
-                getPhotosFromGalleryUC.execute( path)
+                getPhotosFromGalleryUC.execute(path)
             }
+            .doOnSuccess { currentPath.value = path }
             .subscribeBy(
                 onSuccess = {
                     if (!back) {
@@ -56,11 +58,20 @@ class GalleryViewModel(
         return folderStack.isNotEmpty()
     }
 
+    fun unselectAll() {
+        selectedPhotos.clear()
+        updateSelected()
+    }
+
+    fun selectAll() {
+        selectedPhotos.addAll(photos.value!!.map { it.photoEntity }.filter { !it.isDirectory })
+        updateSelected()
+    }
+
     fun goBack() {
         Log.i(tag(), "goBack")
         folderStack.pop()
         folderStack.peekIfNotEmpty()?.let { init(it, true) }
-
     }
 
     fun register(photoEntity: PhotoEntity) {
