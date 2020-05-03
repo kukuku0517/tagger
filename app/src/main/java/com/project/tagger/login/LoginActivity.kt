@@ -126,6 +126,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun startMainActivity() {
+        finish()
         startActivity(Intent(this, MainActivity::class.java))
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoundCornerLayout">
+
+        <attr name="roundBackgroundColor" format="reference|color" />
+        <attr name="roundBorderColor" format="reference|color" />
+        <attr name="roundCornerRadius" format="reference|dimension" />
+        <attr name="roundBorderWidth" format="reference|dimension" />
+        <attr name="shouldUseMask" format="reference|boolean" />
+
+    </declare-styleable>
+
+    <declare-styleable name="ShadowLayout">
+        <attr format="dimension" name="sl_cornerRadius"/>
+        <attr format="dimension" name="sl_shadowRadius"/>
+        <attr format="color" name="sl_shadowColor"/>
+        <attr format="dimension" name="sl_dx"/>
+        <attr format="dimension" name="sl_dy"/>
+    </declare-styleable>
+
+</resources>

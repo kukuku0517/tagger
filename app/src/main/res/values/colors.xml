@@ -3,6 +3,16 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="black">#3b3b3b</color>
 
     <color name="black50">#80000000</color>
+
+
+    <color name="grey">#a1a1a1</color>
+
+    <color name="white">#ffffffff</color>
+
+    <color name="background_light_grey">#f9f9f9</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="shadow">#19000000</color>
 </resources>

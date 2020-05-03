@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Tagger</string>
+    <string name="search_tags">Search tags</string>
 </resources>

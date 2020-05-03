@@ -3,6 +3,8 @@ package com.project.tagger.main
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.tabs.TabLayout
 import com.project.tagger.R
 import com.project.tagger.gallery.GalleryFragment
 import com.project.tagger.registeredGallery.RegisteredGalleryFragment
@@ -20,6 +22,21 @@ class MainActivity : AppCompatActivity() {
             .subscribeBy(onNext = {
                 adapter = MainPagerAdapter(supportFragmentManager)
                 mVpMain.adapter = adapter
+                mVpMain.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(mTlMain))
+                mTlMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                    override fun onTabReselected(tab: TabLayout.Tab?) {
+                    }
+
+                    override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    }
+
+                    override fun onTabSelected(tab: TabLayout.Tab?) {
+                        if (tab != null) {
+                            mVpMain.currentItem = tab.position
+                        }
+                    }
+
+                })
             }, onError = {})
 
 

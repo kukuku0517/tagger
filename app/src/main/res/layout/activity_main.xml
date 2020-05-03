@@ -8,7 +8,7 @@
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/mVpMain"
-        android:background="@color/colorPrimary"
+        android:background="@color/background_light_grey"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/mTlMain"
@@ -21,13 +21,14 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:icon="@drawable/tags"
       />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
-
+            android:icon="@drawable/ic_photo_library_black_24dp"
             android:layout_height="wrap_content"
             />
 

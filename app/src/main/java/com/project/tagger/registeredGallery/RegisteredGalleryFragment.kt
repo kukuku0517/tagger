@@ -2,19 +2,25 @@ package com.project.tagger.registeredGallery
 
 import android.R.attr.radius
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.annotation.NonNull
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -23,6 +29,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
@@ -33,10 +40,13 @@ import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_registered_gallery.*
 import kotlinx.android.synthetic.main.item_registered_gallery.view.*
 import org.koin.android.ext.android.inject
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 
 class RegisteredGalleryFragment : Fragment() {
@@ -79,12 +89,22 @@ class RegisteredGalleryFragment : Fragment() {
                                 .load(item.path)
                                 .error(Glide.with(context).load(item.remotePath))
                                 .apply(RequestOptions().centerCrop())
+                                .transition(DrawableTransitionOptions.withCrossFade())
                                 .into(containerView.mIvRegGalGallery)
 
                             containerView.mCgRegGalTags.apply {
                                 removeAllViews()
-                                item.tags.forEach {
-                                    addView(Chip(context).apply { text = it.tag })
+                                item.tags.forEach { tag ->
+                                        val tv = TextView(context).apply {
+                                            text = "#${tag.tag}"
+                                            setTextColor(ContextCompat.getColor(context,R.color.grey))
+                                            layoutParams = ViewGroup.LayoutParams(
+                                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                ViewGroup.LayoutParams.WRAP_CONTENT
+                                            )
+                                        }
+                                        addView(tv)
+
                                 }
                             }
 
@@ -113,15 +133,39 @@ class RegisteredGalleryFragment : Fragment() {
                 StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         }
 
-        mEtRegGalSearch.setOnEditorActionListener { v, actionId, event ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_SEARCH -> {
-                    galleryViewModel.query(mEtRegGalSearch.text.toString())
+        Observable.create<String> { emitter ->
+            val watcher = object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    emitter.onNext(s.toString())
                 }
             }
 
-            true
-        }
+            mEtRegGalSearch.addTextChangedListener(watcher)
+            emitter.setCancellable {
+                mEtRegGalSearch.removeTextChangedListener(watcher)
+            }
+        }.debounce(500, TimeUnit.MILLISECONDS)
+            .subscribeBy(
+                onNext = {
+                    galleryViewModel.query(mEtRegGalSearch.text.toString())
+                },
+                onError = {
+
+                })
+
 
         galleryViewModel.photos.observe(context as LifecycleOwner, Observer {
             Log.i(tag(), "get new photos")
