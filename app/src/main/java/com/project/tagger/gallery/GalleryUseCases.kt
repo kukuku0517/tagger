@@ -25,7 +25,7 @@ data class PhotoEntity(
 @Parcelize
 data class TagEntity(
     val tag: String = "",
-    val count: Int
+    val count: Int = -1
 ) : Parcelable
 
 class GetPhotosFromGalleryUC(

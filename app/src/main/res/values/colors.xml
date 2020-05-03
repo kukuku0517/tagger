@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#6eceda</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="black">#3b3b3b</color>
@@ -16,4 +16,9 @@
     <color name="background_light_grey">#f9f9f9</color>
     <color name="transparent">#00ffffff</color>
     <color name="shadow">#19000000</color>
+
+    <color name="tag_color_0">#f2eee5</color>
+    <color name="tag_color_1">#e5c1c5</color>
+    <color name="tag_color_2">#c3e2dd</color>
+    <color name="tag_color_3">#6eceda</color>
 </resources>

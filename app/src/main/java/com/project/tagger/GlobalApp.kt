@@ -48,7 +48,7 @@ val module = module {
 
     factory { TagViewModel(get(),get()) }
 
-    factory { RegisteredGalleryViewModel(get(),get()) }
+    factory { RegisteredGalleryViewModel(get(),get(),get()) }
 
     single<GalleryRepository> { LocalGalleryRepository(get(), get()) }
 

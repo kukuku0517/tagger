@@ -1,6 +1,8 @@
 package com.project.tagger.util
 
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.DecelerateInterpolator
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
@@ -16,14 +18,27 @@ fun View.show(show: Boolean = true) {
     this.visibility = if (show) View.VISIBLE else View.GONE
 }
 
-fun <T> Stack<T>.peekIfNotEmpty(): T? {
-    return if (isNotEmpty()){
-        peek()
-    }else{
-        null
+fun View.showInvisible(show: Boolean = true, animated: Long = 0) {
+    this.visibility = if (show) View.VISIBLE else View.INVISIBLE
+    if (animated > 0) {
+        val fadeIn = if (show) {
+            AlphaAnimation(0f, 1f)
+        } else {
+            AlphaAnimation(1f, 0f)
+        }
+        fadeIn.interpolator = DecelerateInterpolator() //add this
+        fadeIn.duration =animated
+        this.animation = fadeIn
     }
 }
 
+fun <T> Stack<T>.peekIfNotEmpty(): T? {
+    return if (isNotEmpty()) {
+        peek()
+    } else {
+        null
+    }
+}
 
 
 inline fun <reified T : Any> DocumentReference.asMaybe(): Maybe<T> {

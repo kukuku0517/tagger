@@ -16,17 +16,17 @@
         app:sl_shadowRadius="8dp">
 
         <com.project.tagger.util.widget.RoundCornerLayout
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:roundCornerRadius="8dp">
 
             <ImageView
 
-                android:foreground="?attr/selectableItemBackground"
                 android:id="@+id/mIvRegGalGallery"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:layout_constraintTop_toTopOf="parent" />
         </com.project.tagger.util.widget.RoundCornerLayout>
     </com.project.tagger.util.widget.ShadowLayout>
@@ -39,9 +39,9 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:flChildSpacing="2dp"
         app:flChildSpacingForLastRow="align"
         app:flRowSpacing="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mLayoutRegGalGallery" />
 </androidx.constraintlayout.widget.ConstraintLayout>
