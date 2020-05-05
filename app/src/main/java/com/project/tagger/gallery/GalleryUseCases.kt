@@ -19,7 +19,13 @@ data class PhotoEntity(
     val isDirectory: Boolean = false,
     val folderName: String? = "",
     val isRegistered: Boolean = false,
-    val repoId: Int? = null
+    val repoId: Int? = null,
+
+    val createdAt: String = "2020-05-05T00:00:00",
+    val updatedAt: String = "2020-05-05T00:00:00",
+    val usedAt: String = "2020-05-05T00:00:00",
+    val sharedCount: Int = 0
+
 ) : Parcelable
 
 @Parcelize
@@ -67,10 +73,17 @@ class RegisterTagsOnPhotosUC(
 ) :
     UseCaseSingle<RegisterTagsOnPhotosUC.RegisterTagParam, List<PhotoEntity>> {
 
+    enum class RegisterType {
+        MERGE,
+        REPLACE
+    }
+
     data class RegisterTagParam(
         val tags: List<TagEntity>,
         val photos: List<PhotoEntity>,
-        val repo: RepoEntity
+        val repo: RepoEntity,
+        val type: RegisterType = RegisterType.MERGE,
+        val updatedAt: String
     )
 
     override fun execute(params: RegisterTagParam?): Single<List<PhotoEntity>> {
@@ -79,33 +92,49 @@ class RegisterTagsOnPhotosUC(
         val tags = params.tags
         val photos = params.photos
         val repo = params.repo
-
+        val isBackUp = repo.isBackUp
         if (tags.isEmpty()) {
             return Single.error(Exception("At least 1 tag is required"))
         }
 
         val taggedPhotos =
-            photos.map {
-                it.copy(
-                    repoId = repo.id,
-                    tags = it.tags.toMutableSet().apply { addAll(tags) }.toList()
-                )
+            when (params.type) {
+                RegisterType.MERGE -> photos.map {
+                    it.copy(
+                        repoId = repo.id,
+                        tags = it.tags.toMutableSet().apply { addAll(tags) }.toList(),
+                        updatedAt = params.updatedAt
+                    )
+                }
+                RegisterType.REPLACE -> photos.map {
+                    it.copy(
+                        repoId = repo.id,
+                        tags = tags,
+                        updatedAt = params.updatedAt
+                    )
+                }
             }
 
-        val isBackUp = repo.isBackUp
+
+
 
         return Observable.fromIterable(taggedPhotos)
             .flatMapSingle {
-                if (true && it.remotePath.isNullOrEmpty()) {
+                if (isBackUp && it.remotePath.isNullOrEmpty()) {
                     photoRepository.uploadPhoto(repo, it)
                 } else {
                     Single.just(it)
                 }
             }
-            .flatMapSingle { photoRepository.register(repo, it) }
+            .flatMapSingle {
+                when (params.type) {
+                    RegisterType.MERGE -> photoRepository.register(repo, it)
+                    RegisterType.REPLACE -> photoRepository.registerReplace(repo, it)
+                }
+            }
             .toList()
             .flatMap { photos ->
-                if (true) {
+                if (isBackUp) {
                     repoRepository.postRepos(
                         repo.copy(photos = repo.photos.toMutableList().apply { addAll(photos) })
                     ).map { photos }
@@ -114,6 +143,15 @@ class RegisterTagsOnPhotosUC(
                 }
             }
 
+    }
+
+}
+
+class DeletePhotoUC(val galleryRepository: GalleryRepository):UseCaseSingle<PhotoEntity, PhotoEntity>{
+    override fun execute(params: PhotoEntity?): Single<PhotoEntity> {
+        params?:return Single.error(UseCaseParameterNullPointerException())
+
+        return galleryRepository.deletePhoto(params)
     }
 
 }

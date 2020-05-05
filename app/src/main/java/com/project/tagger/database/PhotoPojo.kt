@@ -1,6 +1,7 @@
 package com.project.tagger.database
 
 import androidx.room.*
+import com.project.tagger.gallery.PhotoEntity
 
 @Entity(tableName = "photo")
 data class PhotoPojo(
@@ -9,7 +10,13 @@ data class PhotoPojo(
     val remotePath: String?,
     val isDirectory: Boolean,
     val folderName: String?,
-    val repoId: Int? = null
+    val repoId: Int? = null,
+
+    val createdAt: String = "2020-05-05T00:00:00",
+    val updatedAt: String = "2020-05-05T00:00:00",
+    val usedAt: String = "2020-05-05T00:00:00",
+    val sharedCount: Int = 0
+
 )
 
 @Entity(tableName = "tag")
@@ -76,6 +83,16 @@ interface PhotoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun createOrUpdateWithTag(toPojo: PhotoTagJoin)
+
+    @Delete
+    fun deleteTag(toPojo: PhotoTagJoin)
+
+
+    @Delete
+    fun deleteTags(toPojo: List<PhotoTagJoin>)
+
+    @Delete
+    fun deletePhoto(photo: PhotoPojo)
 }
 
 

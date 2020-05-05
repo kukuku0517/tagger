@@ -128,7 +128,10 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                 TagBottomSheetDialog.create(
                     galleryViewModel.selectedPhotos.toMutableList(),
                     galleryViewModel.currentRepo!!
-                ).show(
+                ).setOnDismissListener {
+                    galleryViewModel.unselectAll()
+                    galleryViewModel.init(galleryViewModel.currentPath.value!!)
+                }.show(
                     it1, "tag"
                 )
             }

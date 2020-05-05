@@ -37,6 +37,8 @@ class SimpleRecyclerViewAdapter<T>(
             oldItems: List<T>,
             newItems: List<T>
         )
+
+
     }
 
     inner class BaseViewHolder(override val containerView: View) :
@@ -50,6 +52,7 @@ class SimpleRecyclerViewAdapter<T>(
         val rootView: View = LayoutInflater.from(context)
             .inflate(provider.getLayoutId(), parent, false)
         val holder = BaseViewHolder(rootView)
+
         holder.containerView.setOnClickListener {
             provider.onClick(holder.adapterPosition)
         }

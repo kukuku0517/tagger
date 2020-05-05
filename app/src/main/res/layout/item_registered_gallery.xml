@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -19,15 +20,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:roundCornerRadius="8dp">
-
-            <ImageView
-
-                android:id="@+id/mIvRegGalGallery"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:foreground="?attr/selectableItemBackground"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/mIvRegGalGallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/ic_share_black_24dp" />
+                <ImageView
+                    android:id="@+id/mIvRegGalShare"
+                    android:src="@drawable/ic_share_black_24dp"
+                    android:tint="@color/grey"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:layout_width="wrap_content"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:padding="8dp"
+                    android:layout_height="wrap_content"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.project.tagger.util.widget.RoundCornerLayout>
     </com.project.tagger.util.widget.ShadowLayout>
 

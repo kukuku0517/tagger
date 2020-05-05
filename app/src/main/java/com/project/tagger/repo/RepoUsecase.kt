@@ -28,7 +28,6 @@ class GetReposUC(
         return getUserUC.execute()
             .flatMapSingle { user ->
                 repoRepository.getRepos(user)
-
             }
     }
 }

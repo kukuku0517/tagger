@@ -26,6 +26,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.chip.Chip
 import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
+import com.project.tagger.tag.TagBottomSheetDialog
 import com.project.tagger.util.showInvisible
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
@@ -111,6 +112,10 @@ class RegisteredGalleryFragment : Fragment() {
                         } else {
                             containerView.mIvRegGalGallery.setImageDrawable(null)
                         }
+
+                        containerView.mIvRegGalShare.setOnClickListener {
+                            shareImage(item.path)
+                        }
                     }
 
                     override fun onClick(adapterPosition: Int) {
@@ -123,10 +128,18 @@ class RegisteredGalleryFragment : Fragment() {
                                 this@RegisteredGalleryFragment.tag(),
                                 "${item.tags.map { it.tag }.reduce { acc, tag -> "$acc $tag" }}"
                             )
-                            shareImage(item.path)
+//                            shareImage(item.path)
+
+                            RegisteredDetailActivity.create(
+                                context,
+                                item,
+                                galleryViewModel.currentRepo.value!!,
+                                item.tags
+                            )
 
                         }
                     }
+
 
                     override fun setItem(
                         adapter: SimpleRecyclerViewAdapter<PhotoEntity>,
@@ -178,7 +191,7 @@ class RegisteredGalleryFragment : Fragment() {
             galleryViewModel.toggleSearch()
         }
 
-        mRvRegGal.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        mRvRegGal.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy <= mRvRegGal.scrollY) {
@@ -242,27 +255,31 @@ class RegisteredGalleryFragment : Fragment() {
             mChipGroupRegGal.removeAllViews()
             tags.forEach { tag ->
                 mChipGroupRegGal.addView(
-                    Chip(context).apply {
-                        text = tag.tag
-                        setTextColor(ContextCompat.getColor(context, R.color.white))
-                        chipBackgroundColor = ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                context,
-                                tagColors[Random.nextInt(tagColors.size)]
+                    (layoutInflater.inflate(
+                        R.layout.chip_filter_layout,
+                        mChipGroupRegGal,
+                        false
+                    ) as Chip)
+                        .apply {
+                            text = tag.tag
+                            setTextColor(ContextCompat.getColor(context, R.color.white))
+                            chipBackgroundColor = ColorStateList.valueOf(
+                                ContextCompat.getColor(
+                                    context,
+                                    tagColors[Random.nextInt(tagColors.size)]
+                                )
                             )
-                        )
-                        setOnClickListener {
-                            if (this.isSelected) {
-                                galleryViewModel.query(listOf(""))
-                            } else {
-                                galleryViewModel.query(listOf(tag.tag))
+                            setOnCheckedChangeListener { buttonView, isChecked ->
+                                if (isChecked) {
+                                    galleryViewModel.query(listOf(tag.tag))
+                                } else {
+                                    galleryViewModel.query(listOf(""))
+
+                                }
                             }
-                            this.isSelected = !this.isSelected
                         }
-                    }
                 )
             }
-
         })
     }
 
@@ -290,7 +307,7 @@ class RegisteredGalleryFragment : Fragment() {
             Uri.fromFile(imageFile)
         }
         intent.putExtra(Intent.EXTRA_STREAM, uri)
-        startActivityForResult(Intent.createChooser(intent, "공유"), 100)
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.share)), 100)
     }
 
 

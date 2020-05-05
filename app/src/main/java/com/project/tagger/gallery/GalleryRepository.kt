@@ -13,6 +13,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileFilter
 import java.lang.Exception
+import java.lang.NullPointerException
 
 
 interface GalleryRepository {
@@ -22,6 +23,8 @@ interface GalleryRepository {
     fun register(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity>
     fun uploadPhoto(repo: RepoEntity, photoEntity: PhotoEntity): Single<PhotoEntity>
     fun getTags(): Single<List<TagEntity>>
+    fun registerReplace(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity>
+    fun deletePhoto(params: PhotoEntity): Single<PhotoEntity>
 }
 
 class LocalGalleryRepository(
@@ -153,8 +156,44 @@ class LocalGalleryRepository(
             Single.just(photoWithTags.toEntity())
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
 
+    override fun registerReplace(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity> {
+        return Single.defer {
+            val photoWithTags = params.toPojo()
 
+            appDatabase.photoDao().createOrUpdate(photoWithTags.photos)
+
+            val photo = appDatabase.photoDao().getPhotoWithTagsById(photoWithTags.photos.path)
+            photo ?: throw NullPointerException()
+
+            photoWithTags.tags.forEach {
+                appDatabase.tagDao().createOrUpdate(it)
+            }
+
+            val oldTagJoin = photo.tags.map { PhotoTagJoin(path = photo.photos.path, tag = it.tag) }
+            appDatabase.photoDao().deleteTags(oldTagJoin)
+
+            photoWithTags.tags.forEach {
+                appDatabase.photoDao().createOrUpdateWithTag(
+                    PhotoTagJoin(
+                        path = photoWithTags.photos.path,
+                        tag = it.tag
+                    )
+                )
+            }
+
+            Single.just(photoWithTags.toEntity())
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun deletePhoto(params: PhotoEntity): Single<PhotoEntity> {
+        return Single.defer {
+            appDatabase.photoDao().deletePhoto(params.toPhotoPojo())
+            Single.just(params)
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
 
@@ -192,6 +231,21 @@ data class GridViewItem(
     val isDirectory: Boolean
 )
 
+fun PhotoEntity.toPhotoPojo(): PhotoPojo {
+    return PhotoPojo(
+        path = this.path,
+        remotePath = this.remotePath,
+        isDirectory = this.isDirectory,
+        folderName = this.folderName,
+        repoId = this.repoId,
+
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt,
+        usedAt = this.usedAt,
+        sharedCount = this.sharedCount
+    )
+}
+
 fun PhotoEntity.toPojo(): PhotoWithTags {
     return PhotoWithTags(
         photos = PhotoPojo(
@@ -199,7 +253,12 @@ fun PhotoEntity.toPojo(): PhotoWithTags {
             remotePath = this.remotePath,
             isDirectory = this.isDirectory,
             folderName = this.folderName,
-            repoId = this.repoId
+            repoId = this.repoId,
+
+            createdAt = this.createdAt,
+            updatedAt = this.updatedAt,
+            usedAt = this.usedAt,
+            sharedCount = this.sharedCount
         ), tags = this.tags.map { it.toPojo() }
     )
 }
@@ -215,7 +274,12 @@ fun PhotoWithTags.toEntity(): PhotoEntity {
         isDirectory = false,
         folderName = null,
         tags = this.tags.map { it.toEntity() },
-        repoId = this.photos.repoId
+        repoId = this.photos.repoId,
+
+        createdAt = this.photos.createdAt,
+        updatedAt = this.photos.updatedAt,
+        usedAt = this.photos.usedAt,
+        sharedCount = this.photos.sharedCount
     )
 }
 

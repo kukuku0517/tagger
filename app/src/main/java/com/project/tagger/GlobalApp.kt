@@ -11,6 +11,7 @@ import com.project.tagger.registeredGallery.RegisteredGalleryViewModel
 import com.project.tagger.tag.TagViewModel
 import com.facebook.stetho.Stetho
 import com.project.tagger.login.GetUserUC
+import com.project.tagger.registeredGallery.RegisteredDetailViewModel
 import com.project.tagger.repo.GetReposUC
 import com.project.tagger.repo.RepoRepository
 import com.project.tagger.repo.RepoRepositoryImpl
@@ -43,9 +44,10 @@ val module = module {
     factory { GetUserUC(get()) }
     factory { GetReposUC(get(),get()) }
     factory { GetPopularTagsUC(get()) }
+    factory { DeletePhotoUC(get()) }
 
     factory { GalleryViewModel(get(), get()) }
-
+    factory { RegisteredDetailViewModel(get(), get(),get()) }
     factory { TagViewModel(get(),get()) }
 
     factory { RegisteredGalleryViewModel(get(),get(),get()) }

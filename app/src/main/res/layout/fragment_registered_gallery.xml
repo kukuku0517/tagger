@@ -29,9 +29,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginRight="8dp"
-                android:fontFamily="@font/noto_sans_bold"
-                android:textColor="@color/black"
-                android:textSize="28sp"
+                style="@style/AppTheme.Title"
                 tools:text="Ko's repository" />
 
             <TextView

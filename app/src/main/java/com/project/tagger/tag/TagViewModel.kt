@@ -8,7 +8,9 @@ import com.project.tagger.gallery.RegisterTagsOnPhotosUC
 import com.project.tagger.gallery.TagEntity
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.MutableLiveEvent
+import com.project.tagger.util.Time
 import com.project.tagger.util.tag
+import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import java.util.ArrayList
 
@@ -35,14 +37,21 @@ class TagViewModel(
     val finishEvent = MutableLiveEvent(false)
     var repo: RepoEntity? = null
 
-    fun init() {
-        getPopularTagsUC.execute()
+    fun setTags(tags: ArrayList<TagEntity>?) {
+        if (tags.isNullOrEmpty()) {
+            getPopularTagsUC.execute()
+                .map { it.map { TagViewItem(it, isSelected = false) } }
+        } else {
+            Single.just(tags)
+                .map { it.map { TagViewItem(it, isSelected = true) } }
+        }
             .doOnSubscribe { isLoading.value = true }
-            .map { it.map { TagViewItem(it, isSelected = false) } }
+
             .subscribeBy(
                 onSuccess = {
                     isLoading.value = false
-                    tags.value = tags.value!!.apply { addAll(it) }.sortedBy { it.tag.tag }.toMutableSet()
+                    this.tags.value = this.tags.value!!.apply { addAll(it) }.sortedBy { it.tag.tag }
+                        .toMutableSet()
                 },
                 onError = {
                     isLoading.value = false
@@ -78,9 +87,11 @@ class TagViewModel(
 
         registerTagsOnPhotosUC.execute(
             RegisterTagsOnPhotosUC.RegisterTagParam(
-                tags.value!!.filter { it.isSelected }.map { it.tag },
-                photos,
-                repo!!
+                tags = tags.value!!.filter { it.isSelected }.map { it.tag },
+                photos = photos,
+                repo = repo!!,
+                type = RegisterTagsOnPhotosUC.RegisterType.MERGE,
+                updatedAt = Time().toTimestamp()
             )
         )
             .doOnSubscribe { isLoading.value = true }

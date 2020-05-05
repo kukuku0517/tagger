@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:background="@color/colorPrimary"
-    android:orientation="vertical">
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+
+    android:orientation="vertical"
+    tools:background="@color/colorPrimary">
 
     <TextView
+        style="@style/AppTheme.Title"
+        android:textAlignment="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Tag your photos"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+        android:text="Tag your photos" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mRvTagPhotos"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:requiresFadingEdge="horizontal" />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/mCgTag"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+
+    </com.google.android.material.chip.ChipGroup>
 
     <EditText
         android:id="@+id/mEtTag"
@@ -26,7 +37,8 @@
         android:layout_height="wrap_content"
         android:hint="@string/choose_a_tag"
         android:imeOptions="actionSearch"
-        android:inputType="text" />
+        android:inputType="text"
+        android:theme="@style/AppTheme.Search" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -38,7 +50,7 @@
             android:layout_height="wrap_content"
             android:foreground="?attr/selectableItemBackground"
             android:padding="8dp"
-            android:text="완료"
+            android:text="@string/done"
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -47,8 +59,8 @@
             android:id="@+id/mPbTagLoading"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/mTvTagComplete"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/mTvTagComplete"
             app:layout_constraintTop_toTopOf="@id/mTvTagComplete" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

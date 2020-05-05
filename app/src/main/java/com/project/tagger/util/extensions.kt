@@ -27,7 +27,7 @@ fun View.showInvisible(show: Boolean = true, animated: Long = 0) {
             AlphaAnimation(1f, 0f)
         }
         fadeIn.interpolator = DecelerateInterpolator() //add this
-        fadeIn.duration =animated
+        fadeIn.duration = animated
         this.animation = fadeIn
     }
 }

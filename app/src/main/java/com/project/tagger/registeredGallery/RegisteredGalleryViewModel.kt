@@ -45,7 +45,7 @@ class RegisteredGalleryViewModel(
             )
 
         getRepo()
-            .map { it.photos }
+            .map { it.photos.sortedByDescending { it.updatedAt } }
 //        getRegisteredPhotosUC.execute()
             .subscribeBy(
                 onSuccess = {
