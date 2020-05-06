@@ -1,19 +1,17 @@
 package com.project.tagger.gallery
 
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
-import android.util.Log
+import android.provider.MediaStore
 import com.google.firebase.storage.FirebaseStorage
 import com.project.tagger.database.*
 import com.project.tagger.repo.RepoEntity
-import com.project.tagger.util.tag
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileFilter
-import java.lang.Exception
-import java.lang.NullPointerException
 
 
 interface GalleryRepository {
@@ -34,50 +32,83 @@ class LocalGalleryRepository(
     val storage = FirebaseStorage.getInstance()
 
     override fun createGridItems(params: String): List<PhotoEntity> {
-        val items: MutableList<GridViewItem> = ArrayList<GridViewItem>()
-        Log.i(tag(), "open file $params")
-        val files: Array<File> = File(params)
-            .listFiles(ImageFileFilter())
-        for (file in files) { // Add the directories containing images or sub-directories
-            if (file.isDirectory) {
-                if (file.listFiles(ImageFileFilter()).isNotEmpty()) {
+        return if (params.isEmpty()) {
+            getBuckets()
+        } else {
+            getImagesByBucket(params)
+        }
 
-                    Log.i(tag(), "dir ${file.path}")
+    }
 
-                    items.add(
-                        GridViewItem(
-                            path = file.getAbsolutePath(),
-                            folderName = file.absolutePath.split("/").last(),
-                            isDirectory = true
+    private fun getBuckets(): MutableList<PhotoEntity> {
+        val buckets: MutableList<PhotoEntity> = ArrayList()
+        val bucketSet: MutableSet<String> = mutableSetOf()
+        val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf<String>(
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+            MediaStore.Images.Media.DATA
+        )
+
+        val cursor: Cursor? = context.getContentResolver().query(uri, projection, null, null, null)
+        if (cursor != null) {
+            var file: File
+            while (cursor.moveToNext()) {
+                val bucketPath: String =
+                    cursor.getString(cursor.getColumnIndex(projection[0]))
+                val fisrtImage: String =
+                    cursor.getString(cursor.getColumnIndex(projection[1]))
+                file = File(fisrtImage)
+                if (file.exists() && !bucketSet.contains(bucketPath)) {
+                    buckets.add(
+                        PhotoEntity(
+                            bucketPath,
+                            null,
+                            listOf(),
+                            true,
+                            bucketPath,
+                            repoId = null
                         )
                     )
-                } else {
-                    Log.i(tag(), "dir ${file.path} empty")
-
+                    bucketSet.add(bucketPath)
                 }
-
-            } else {
-                Log.i(tag(), "img ${file.path}")
-
-                items.add(
-                    GridViewItem(
-                        path = file.getAbsolutePath(),
-                        folderName = null,
-                        isDirectory = false
-                    )
-                )
             }
+            cursor.close()
         }
-        return items.map {
-            PhotoEntity(
-                it.path,
-                null,
-                listOf(),
-                it.isDirectory,
-                it.folderName,
-                repoId = null
-            )
+        return buckets
+    }
+
+    fun getImagesByBucket(bucketPath: String): MutableList<PhotoEntity> {
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection =
+            arrayOf(MediaStore.Images.Media.DATA)
+        val selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " =?"
+        val orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC"
+        val images: MutableList<String> = ArrayList()
+        val photos: MutableList<PhotoEntity> = mutableListOf()
+        val cursor: Cursor? = context.contentResolver
+            .query(uri, projection, selection, arrayOf(bucketPath), orderBy)
+        if (cursor != null) {
+            var file: File
+            while (cursor.moveToNext()) {
+                val path = cursor.getString(cursor.getColumnIndex(projection[0]))
+                file = File(path)
+                if (file.exists() && !images.contains(path)) {
+                    images.add(path)
+                    photos.add(
+                        PhotoEntity(
+                            path,
+                            null,
+                            listOf(),
+                            false ,
+                            path,
+                            repoId = null
+                        )
+                    )
+                }
+            }
+            cursor.close()
         }
+        return photos
     }
 
     override fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>> {

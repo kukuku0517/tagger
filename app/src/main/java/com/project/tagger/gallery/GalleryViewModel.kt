@@ -19,7 +19,7 @@ class GalleryViewModel(
     val photos = MutableLiveData<List<PhotoViewItem>>()
     val hasSelectedPhotos = MutableLiveData<Boolean>().apply { value = false }
     val selectedPhotos = mutableSetOf<PhotoEntity>()
-    val defaultPath: String = Environment.getExternalStorageDirectory().path
+    val defaultPath: String = ""
     val folderStack = Stack<String>()
     val currentPath = MutableLiveData<String>().apply { value = defaultPath }
 
