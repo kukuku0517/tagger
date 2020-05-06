@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/mIvGallery"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_folder_black_24dp" />
+
+    <TextView
+        android:id="@+id/mTvGalleryFolderName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        tools:text="aefawef"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/mIvGallery"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/mTvGalleryFolderCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        tools:text="aefawef"
+        app:layout_constraintTop_toBottomOf="@id/mTvGalleryFolderName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/mIvGallery"
+        />
+
+    <ImageView
+        android:id="@+id/mTvGallerySelected"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/gallery_selected_border"
+
+        app:layout_constraintBottom_toBottomOf="@id/mIvGallery"
+
+        app:layout_constraintLeft_toLeftOf="@id/mIvGallery"
+        app:layout_constraintRight_toRightOf="@id/mIvGallery"
+        app:layout_constraintTop_toTopOf="@id/mIvGallery" />
+
+    <View
+        android:id="@+id/mTintGallery"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/black50"
+        app:layout_constraintBottom_toBottomOf="@id/mIvGallery"
+        app:layout_constraintLeft_toLeftOf="@id/mIvGallery"
+        app:layout_constraintRight_toRightOf="@id/mIvGallery"
+        app:layout_constraintTop_toTopOf="@id/mIvGallery" />
+</androidx.constraintlayout.widget.ConstraintLayout>

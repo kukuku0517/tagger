@@ -3,6 +3,7 @@ package com.project.tagger.gallery
 import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.project.tagger.repo.GetReposUC
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.peekIfNotEmpty
@@ -18,11 +19,18 @@ class GalleryViewModel(
 ) {
     val photos = MutableLiveData<List<PhotoViewItem>>()
     val hasSelectedPhotos = MutableLiveData<Boolean>().apply { value = false }
-    val selectedPhotos = mutableSetOf<PhotoEntity>()
+    val selectedPhotos = mutableSetOf<GalleryEntity>()
     val defaultPath: String = ""
     val folderStack = Stack<String>()
     val currentPath = MutableLiveData<String>().apply { value = defaultPath }
 
+    val gridType = Transformations.map(currentPath){
+        if (it.isEmpty()){
+            1
+        }else{
+            0
+        }
+    }
 
     var currentRepo: RepoEntity? = null
 
@@ -74,7 +82,7 @@ class GalleryViewModel(
         folderStack.peekIfNotEmpty()?.let { init(it, true) }
     }
 
-    fun register(photoEntity: PhotoEntity) {
+    fun register(photoEntity: GalleryEntity) {
         if (selectedPhotos.contains(photoEntity)) {
             selectedPhotos.remove(photoEntity)
         } else {
@@ -105,7 +113,7 @@ class GalleryViewModel(
     }
 
     data class PhotoViewItem(
-        val photoEntity: PhotoEntity,
+        val photoEntity: GalleryEntity,
         val isSelected: Boolean = false
     )
 }

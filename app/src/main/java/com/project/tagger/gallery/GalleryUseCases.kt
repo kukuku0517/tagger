@@ -28,6 +28,15 @@ data class PhotoEntity(
 
 ) : Parcelable
 
+data class GalleryEntity(
+    val path: String = "",
+    val isDirectory: Boolean = false,
+    val folderName: String? = "",
+    val isRegistered: Boolean = false,
+    val childCount: Int = 0,
+    val thumb: String?
+)
+
 @Parcelize
 data class TagEntity(
     val tag: String = "",
@@ -36,8 +45,8 @@ data class TagEntity(
 
 class GetPhotosFromGalleryUC(
     val photoRepository: GalleryRepository
-) : UseCaseSingle<String, List<PhotoEntity>> {
-    override fun execute(params: String?): Single<List<PhotoEntity>> {
+) : UseCaseSingle<String, List<GalleryEntity>> {
+    override fun execute(params: String?): Single<List<GalleryEntity>> {
         params ?: return Single.error(UseCaseParameterNullPointerException())
 
         return Single.just(photoRepository.createGridItems(params))

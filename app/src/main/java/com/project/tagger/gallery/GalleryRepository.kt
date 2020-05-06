@@ -16,7 +16,7 @@ import java.io.FileFilter
 
 interface GalleryRepository {
 
-    fun createGridItems(params: String): List<PhotoEntity>
+    fun createGridItems(params: String): List<GalleryEntity>
     fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>>
     fun register(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity>
     fun uploadPhoto(repo: RepoEntity, photoEntity: PhotoEntity): Single<PhotoEntity>
@@ -31,7 +31,7 @@ class LocalGalleryRepository(
 ) : GalleryRepository {
     val storage = FirebaseStorage.getInstance()
 
-    override fun createGridItems(params: String): List<PhotoEntity> {
+    override fun createGridItems(params: String): List<GalleryEntity> {
         return if (params.isEmpty()) {
             getBuckets()
         } else {
@@ -40,36 +40,41 @@ class LocalGalleryRepository(
 
     }
 
-    private fun getBuckets(): MutableList<PhotoEntity> {
-        val buckets: MutableList<PhotoEntity> = ArrayList()
+    private fun getBuckets(): MutableList<GalleryEntity> {
+        val buckets: MutableList<GalleryEntity> = ArrayList()
         val bucketSet: MutableSet<String> = mutableSetOf()
         val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf<String>(
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-            MediaStore.Images.Media.DATA
+            MediaStore.Images.Media.DATA,
+            MediaStore.Images.Media.BUCKET_ID
         )
 
         val cursor: Cursor? = context.getContentResolver().query(uri, projection, null, null, null)
         if (cursor != null) {
             var file: File
             while (cursor.moveToNext()) {
-                val bucketPath: String =
+                val bucketName: String =
                     cursor.getString(cursor.getColumnIndex(projection[0]))
-                val fisrtImage: String =
+                val firstImage: String =
                     cursor.getString(cursor.getColumnIndex(projection[1]))
-                file = File(fisrtImage)
-                if (file.exists() && !bucketSet.contains(bucketPath)) {
+                val bucketPath: String =
+                    cursor.getString(cursor.getColumnIndex(projection[2]))
+                file = File(firstImage)
+                if (file.exists() && !bucketSet.contains(bucketName)) {
+                    val images = file.parentFile?.listFiles(ImageFileFilter()) ?: arrayOf()
                     buckets.add(
-                        PhotoEntity(
-                            bucketPath,
-                            null,
-                            listOf(),
+                        GalleryEntity(
+                            bucketName,
                             true,
-                            bucketPath,
-                            repoId = null
+
+                            bucketName,
+                            false,
+                            images.size,
+                            firstImage
                         )
                     )
-                    bucketSet.add(bucketPath)
+                    bucketSet.add(bucketName)
                 }
             }
             cursor.close()
@@ -77,14 +82,14 @@ class LocalGalleryRepository(
         return buckets
     }
 
-    fun getImagesByBucket(bucketPath: String): MutableList<PhotoEntity> {
+    fun getImagesByBucket(bucketPath: String): MutableList<GalleryEntity> {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val projection =
             arrayOf(MediaStore.Images.Media.DATA)
         val selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " =?"
         val orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC"
         val images: MutableList<String> = ArrayList()
-        val photos: MutableList<PhotoEntity> = mutableListOf()
+        val photos: MutableList<GalleryEntity> = mutableListOf()
         val cursor: Cursor? = context.contentResolver
             .query(uri, projection, selection, arrayOf(bucketPath), orderBy)
         if (cursor != null) {
@@ -95,13 +100,14 @@ class LocalGalleryRepository(
                 if (file.exists() && !images.contains(path)) {
                     images.add(path)
                     photos.add(
-                        PhotoEntity(
+                        GalleryEntity(
                             path,
-                            null,
-                            listOf(),
-                            false ,
+                            false,
+
                             path,
-                            repoId = null
+                            false,
+                            0,
+                            null
                         )
                     )
                 }
