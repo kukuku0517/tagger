@@ -7,6 +7,8 @@ import com.project.tagger.util.UseCaseParameterNullPointerException
 import com.project.tagger.util.UseCaseSingle
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.parcel.Parcelize
 import java.lang.Exception
 
@@ -34,6 +36,7 @@ data class GalleryEntity(
     val folderName: String? = "",
     val isRegistered: Boolean = false,
     val childCount: Int = 0,
+    val registeredCount: Int = 0,
     val thumb: String?
 )
 
@@ -49,21 +52,50 @@ class GetPhotosFromGalleryUC(
     override fun execute(params: String?): Single<List<GalleryEntity>> {
         params ?: return Single.error(UseCaseParameterNullPointerException())
 
-        return Single.just(photoRepository.createGridItems(params))
+        return photoRepository.createGridItems(params)
             .flatMap { photoFromGallery ->
-                photoRepository.getRegisteredPhotos(query = null, path = params)
-                    .map { registeredPhotos ->
-                        photoFromGallery.map {
-                            if (registeredPhotos.map { it.path }.contains(it.path)) {
-                                it.copy(
-                                    isRegistered = true
-                                )
-                            } else {
-                                it
+                if (params.isNotEmpty()) {
+                    photoRepository.getRegisteredPhotos(query = null, path = params)
+                        .map { registeredPhotos ->
+                            photoFromGallery.map {
+                                if (registeredPhotos.map { it.path }.contains(it.path)) {
+                                    it.copy(
+                                        isRegistered = true
+                                    )
+                                } else {
+                                    it
+                                }
                             }
                         }
-                    }
+                } else {
+                    Observable.fromIterable(photoFromGallery)
+                        .flatMapSingle { gallery ->
+                            photoRepository.getRegisteredPhotos(query = null, path = gallery.path)
+                                .map { registeredPhotos ->
+                                    gallery.copy(
+                                        registeredCount = registeredPhotos.size
+                                    )
+                                }
+                        }
+                        .toList()
+                        .map {
+                            it.sortedWith(Comparator { o1, o2 ->
+                                when {
+                                    o1.childCount != o2.childCount -> {
+                                        o2.childCount - o1.childCount
+                                    }
+                                    o1.path != o2.path -> {
+                                        o1.path.compareTo(o2.path)
+                                    }
+                                    else -> {
+                                        0
+                                    }
+                                }
+                            })
+                        }
+                }
             }
+
     }
 }
 
@@ -156,9 +188,10 @@ class RegisterTagsOnPhotosUC(
 
 }
 
-class DeletePhotoUC(val galleryRepository: GalleryRepository):UseCaseSingle<PhotoEntity, PhotoEntity>{
+class DeletePhotoUC(val galleryRepository: GalleryRepository) :
+    UseCaseSingle<PhotoEntity, PhotoEntity> {
     override fun execute(params: PhotoEntity?): Single<PhotoEntity> {
-        params?:return Single.error(UseCaseParameterNullPointerException())
+        params ?: return Single.error(UseCaseParameterNullPointerException())
 
         return galleryRepository.deletePhoto(params)
     }

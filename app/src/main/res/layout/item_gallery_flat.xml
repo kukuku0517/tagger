@@ -20,21 +20,40 @@
         android:id="@+id/mTvGalleryFolderName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:fontFamily="@font/noto_sans_bold"
+        android:textColor="@color/black"
         android:maxLines="1"
-        tools:text="aefawef"
-        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintBottom_toTopOf="@id/mTvGalleryFolderRegisteredCount"
         app:layout_constraintLeft_toRightOf="@id/mIvGallery"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="aefawef" />
+
     <TextView
-        android:id="@+id/mTvGalleryFolderCount"
+        android:id="@+id/mTvGalleryFolderRegisteredCount"
+        android:textColor="@color/red"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        tools:text="aefawef"
-        app:layout_constraintTop_toBottomOf="@id/mTvGalleryFolderName"
+        android:layout_marginLeft="8dp"
+        android:fontFamily="@font/noto_sans"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/mIvGallery"
-        />
+        app:layout_constraintTop_toBottomOf="@id/mTvGalleryFolderName"
+        tools:text="aefawef" />
+
+    <TextView
+        android:id="@+id/mTvGalleryFolderCount"
+        android:textColor="@color/grey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/noto_sans"
+        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="@id/mTvGalleryFolderRegisteredCount"
+        app:layout_constraintLeft_toRightOf="@id/mTvGalleryFolderRegisteredCount"
+        app:layout_constraintTop_toTopOf="@id/mTvGalleryFolderRegisteredCount"
+        tools:text="aefawef" />
 
     <ImageView
         android:id="@+id/mTvGallerySelected"

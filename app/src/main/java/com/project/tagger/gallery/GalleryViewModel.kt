@@ -1,6 +1,5 @@
 package com.project.tagger.gallery
 
-import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -17,17 +16,33 @@ class GalleryViewModel(
     val getPhotosFromGalleryUC: GetPhotosFromGalleryUC,
     val getReposUC: GetReposUC
 ) {
-    val photos = MutableLiveData<List<PhotoViewItem>>()
+    private val photos = MutableLiveData<List<PhotoViewItem>>()
+
+    val photosFiltered = Transformations.map(photos) {
+        if (filterEnabled) {
+            it.filter { !it.galleryEntity.isRegistered }
+        } else {
+            it
+        }
+    }
     val hasSelectedPhotos = MutableLiveData<Boolean>().apply { value = false }
     val selectedPhotos = mutableSetOf<GalleryEntity>()
     val defaultPath: String = ""
     val folderStack = Stack<String>()
     val currentPath = MutableLiveData<String>().apply { value = defaultPath }
 
-    val gridType = Transformations.map(currentPath){
-        if (it.isEmpty()){
+    val isLoading = MutableLiveData<Boolean>().apply { value = false }
+
+    var  filterEnabled = false
+
+    fun showLoading(show: Boolean) {
+        isLoading.postValue(show)
+    }
+
+    val gridType = Transformations.map(currentPath) {
+        if (it.isEmpty()) {
             1
-        }else{
+        } else {
             0
         }
     }
@@ -43,12 +58,15 @@ class GalleryViewModel(
         } else {
             Single.just(currentRepo)
         }
+            .doOnSubscribe { showLoading(true) }
             .flatMap {
                 getPhotosFromGalleryUC.execute(path)
             }
+
             .doOnSuccess { currentPath.value = path }
             .subscribeBy(
                 onSuccess = {
+                    showLoading(false)
                     if (!back) {
                         folderStack.push(path)
                     }
@@ -58,7 +76,10 @@ class GalleryViewModel(
                         Log.i(tag(), "${it.path} ${it.folderName}")
                     }
                 },
-                onError = { Log.i(tag(), it.message) })
+                onError = {
+                    showLoading(false)
+                    Log.i(tag(), it.message)
+                })
     }
 
     fun hasBackStack(): Boolean {
@@ -72,7 +93,7 @@ class GalleryViewModel(
     }
 
     fun selectAll() {
-        selectedPhotos.addAll(photos.value!!.map { it.photoEntity }.filter { !it.isDirectory })
+        selectedPhotos.addAll(photos.value!!.map { it.galleryEntity }.filter { !it.isDirectory })
         updateSelected()
     }
 
@@ -97,8 +118,8 @@ class GalleryViewModel(
         hasSelectedPhotos.value = selectedPhotos.isNotEmpty()
         photos.value?.let {
             val newPhotos = it.map {
-                if (selectedPhotos.contains(it.photoEntity)) {
-                    Log.i(tag(), "selected ${it.photoEntity.path}")
+                if (selectedPhotos.contains(it.galleryEntity)) {
+                    Log.i(tag(), "selected ${it.galleryEntity.path}")
                     it.copy(
                         isSelected = true
                     )
@@ -112,8 +133,13 @@ class GalleryViewModel(
         }
     }
 
+    fun enableRegisterFilter(checked: Boolean) {
+        filterEnabled = checked
+        photos.value = photos.value
+    }
+
     data class PhotoViewItem(
-        val photoEntity: GalleryEntity,
+        val galleryEntity: GalleryEntity,
         val isSelected: Boolean = false
     )
 }

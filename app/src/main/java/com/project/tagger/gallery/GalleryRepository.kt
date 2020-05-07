@@ -16,7 +16,7 @@ import java.io.FileFilter
 
 interface GalleryRepository {
 
-    fun createGridItems(params: String): List<GalleryEntity>
+    fun createGridItems(params: String): Single<MutableList<GalleryEntity>>
     fun getRegisteredPhotos(query: String?, path: String?): Single<List<PhotoEntity>>
     fun register(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity>
     fun uploadPhoto(repo: RepoEntity, photoEntity: PhotoEntity): Single<PhotoEntity>
@@ -31,12 +31,17 @@ class LocalGalleryRepository(
 ) : GalleryRepository {
     val storage = FirebaseStorage.getInstance()
 
-    override fun createGridItems(params: String): List<GalleryEntity> {
-        return if (params.isEmpty()) {
-            getBuckets()
-        } else {
-            getImagesByBucket(params)
-        }
+    override fun createGridItems(params: String): Single<MutableList<GalleryEntity>> {
+        return Single.defer {
+            val item = if (params.isEmpty()) {
+                getBuckets()
+            } else {
+                getImagesByBucket(params)
+            }
+            Single.just(item)
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
 
     }
 
@@ -71,7 +76,9 @@ class LocalGalleryRepository(
                             bucketName,
                             false,
                             images.size,
+                            0,
                             firstImage
+
                         )
                     )
                     bucketSet.add(bucketName)
@@ -106,6 +113,7 @@ class LocalGalleryRepository(
 
                             path,
                             false,
+                            0,
                             0,
                             null
                         )

@@ -20,7 +20,6 @@ import com.project.tagger.util.show
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
 import kotlinx.android.synthetic.main.fragment_gallery.*
-import kotlinx.android.synthetic.main.item_gallery.view.*
 import kotlinx.android.synthetic.main.item_gallery.view.mIvGallery
 import kotlinx.android.synthetic.main.item_gallery.view.mTintGallery
 import kotlinx.android.synthetic.main.item_gallery.view.mTvGalleryFolderName
@@ -63,15 +62,20 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                 )
             }
         }
-        mTvGalSelectAll.setOnClickListener {
-            galleryViewModel.selectAll()
+
+        mCbGalSelectAll.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                galleryViewModel.selectAll()
+            } else {
+                galleryViewModel.unselectAll()
+            }
         }
 
-        mTvGalUnSelectAll.setOnClickListener {
-            galleryViewModel.unselectAll()
+        mCbGalFilterRegistered.setOnCheckedChangeListener { buttonView, isChecked ->
+            galleryViewModel.enableRegisterFilter(isChecked)
         }
 
-        galleryViewModel.photos.observe(context as LifecycleOwner, Observer {
+        galleryViewModel.photosFiltered.observe(context as LifecycleOwner, Observer {
             Log.i(tag(), "get new photos")
             adapter.provider.items = it
         })
@@ -90,6 +94,13 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
         })
 
         galleryViewModel.gridType.observe(context as LifecycleOwner, Observer {
+            if (it == 1) {
+                mTvGalSelectAll.show(false)
+                mCbGalSelectAll.show(false)
+            } else {
+                mTvGalSelectAll.show(true)
+                mCbGalSelectAll.show(true)
+            }
             context?.let { context ->
                 adapter = createAdapter(
                     context,
@@ -99,6 +110,9 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                 mRvGallery.layoutManager =
                     if (it == 0) GridLayoutManager(context, 3) else LinearLayoutManager(context)
             }
+        })
+        galleryViewModel.isLoading.observe(context as LifecycleOwner, Observer {
+            mPbGallery.show(it)
         })
     }
 
@@ -126,36 +140,38 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                     containerView: View,
                     item: GalleryViewModel.PhotoViewItem
                 ) {
-                    if (!item.photoEntity.isDirectory) {
+                    if (!item.galleryEntity.isDirectory) {
                         containerView.mTvGalleryFolderName.show(false)
-                        Glide.with(context).load(item.photoEntity.path)
+                        Glide.with(context).load(item.galleryEntity.path)
                             .apply(RequestOptions().centerCrop().override(200))
                             .into(containerView.mIvGallery)
-                        containerView.mTintGallery.show(item.photoEntity.isRegistered)
+                        containerView.mTintGallery.show(item.galleryEntity.isRegistered)
                         containerView.mTvGallerySelected.show(item.isSelected)
 
                     } else {
                         containerView.mTintGallery.show(false)
-                        Glide.with(context).load(item.photoEntity.thumb)
+                        Glide.with(context).load(item.galleryEntity.thumb)
                             .error(Glide.with(context).load(R.drawable.ic_icons8_folder))
-                            .apply(RequestOptions())
+                            .apply(RequestOptions().centerCrop().override(200))
                             .into(containerView.mIvGallery)
 
                         containerView.mTvGalleryFolderName.show()
-                        containerView.mTvGalleryFolderName.text = item.photoEntity.folderName
+                        containerView.mTvGalleryFolderName.text = item.galleryEntity.folderName
                         containerView.mTvGallerySelected.show(false)
+                        containerView.mTvGalleryFolderRegisteredCount?.text =
+                            "${item.galleryEntity.registeredCount}"
                         containerView.mTvGalleryFolderCount?.text =
-                            item.photoEntity.childCount.toString()
+                            "/ ${item.galleryEntity.childCount}개"
                     }
                 }
 
                 override fun onClick(adapterPosition: Int) {
                     val item = items[adapterPosition]
-                    if (item.photoEntity.isDirectory) {
-                        Log.i(this@GalleryFragment.tag(), "onClick ${item.photoEntity.path}")
-                        galleryViewModel.init(item.photoEntity.path)
+                    if (item.galleryEntity.isDirectory) {
+                        Log.i(this@GalleryFragment.tag(), "onClick ${item.galleryEntity.path}")
+                        galleryViewModel.init(item.galleryEntity.path)
                     } else {
-                        galleryViewModel.register(item.photoEntity)
+                        galleryViewModel.register(item.galleryEntity)
                     }
                 }
 
@@ -198,7 +214,11 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
 
     override fun onBackPress(function: () -> Unit) {
         when {
+            galleryViewModel.isLoading.value!! -> {
+                return
+            }
             galleryViewModel.hasSelectedPhotos.value!! -> {
+                mCbGalSelectAll.isChecked = false
                 galleryViewModel.unselectAll()
             }
             galleryViewModel.hasBackStack() -> {

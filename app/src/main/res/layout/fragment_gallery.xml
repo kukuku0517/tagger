@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    style="@style/AppTheme.Title"
+                    style="@style/AppTheme.SubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/navigate"
@@ -33,26 +33,24 @@
                 <TextView
                     android:id="@+id/mTvGalSelectAll"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="16dp"
-                    android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:text="@string/select_all"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/mTvGalUnSelectAll"
-
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="8dp"
                     android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:text="@string/unselect_all"
+                    android:text="@string/select_all"
                     app:layout_constraintBottom_toBottomOf="parent"
-
-                    app:layout_constraintRight_toLeftOf="@+id/mTvGalSelectAll"
+                    app:layout_constraintRight_toLeftOf="@id/mCbGalSelectAll"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/mCbGalSelectAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/AppTheme.Checkbox"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:checked="true" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.appcompat.widget.Toolbar>
@@ -80,6 +78,14 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="sdcard/emulated/0" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/mCbGalFilterRegistered"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -89,6 +95,14 @@
             android:overScrollMode="never" />
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/mPbGallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/colorPrimary" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/mTvGalleryRegisterSelected"
