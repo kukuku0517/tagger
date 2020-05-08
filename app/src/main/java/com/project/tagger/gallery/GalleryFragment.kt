@@ -98,10 +98,12 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                 mTvGalSelectAll.show(false)
                 mCbGalSelectAll.show(false)
                 mCbGalFilterRegistered.show(false)
+                mTvGalleryFilter.show(false)
             } else {
                 mTvGalSelectAll.show(true)
                 mCbGalSelectAll.show(true)
                 mCbGalFilterRegistered.show(true)
+                mTvGalleryFilter.show(true)
             }
             context?.let { context ->
                 adapter = createAdapter(

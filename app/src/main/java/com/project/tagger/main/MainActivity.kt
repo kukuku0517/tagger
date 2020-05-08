@@ -7,6 +7,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.project.tagger.R
 import com.project.tagger.gallery.GalleryFragment
+import com.project.tagger.my.MyFragment
 import com.project.tagger.registeredGallery.RegisteredGalleryFragment
 import com.project.tagger.util.Initializer
 import io.reactivex.rxkotlin.subscribeBy
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
             .subscribeBy(onNext = {
                 adapter = MainPagerAdapter(supportFragmentManager)
                 mVpMain.adapter = adapter
+                mVpMain.offscreenPageLimit = 3
                 mVpMain.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(mTlMain))
                 mTlMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                     override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -65,6 +67,7 @@ class MainPagerAdapter(val fm: androidx.fragment.app.FragmentManager) :
     companion object {
         val POSITION_TAGGED = 0
         val POSITION_GALLERY = 1
+        val POSITION_MY = 2
     }
 
     override fun getItem(position: Int): Fragment {
@@ -76,13 +79,16 @@ class MainPagerAdapter(val fm: androidx.fragment.app.FragmentManager) :
             POSITION_GALLERY -> {
                 GalleryFragment()
             }
+            POSITION_MY -> {
+                MyFragment()
+            }
             else -> GalleryFragment()
         }
     }
 
 
     override fun getCount(): Int {
-        return 2
+        return 3
     }
 
     fun getItemByTag(position: Int, viewPagerId: Int): Fragment? {

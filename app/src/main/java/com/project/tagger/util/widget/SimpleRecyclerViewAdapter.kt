@@ -28,15 +28,23 @@ class SimpleRecyclerViewAdapter<T>(
             }
 
         abstract fun getLayoutId(): Int
-        abstract fun getItemCount(): Int
-        abstract fun getItem(position: Int): T
+        open fun getItemCount(): Int {
+            return items.size
+        }
+
+        open fun getItem(position: Int): T {
+            return items[position]
+        }
+
         abstract fun onBindView(containerView: View, item: T)
         abstract fun onClick(adapterPosition: Int)
-        abstract fun setItem(
+        open fun setItem(
             adapter: SimpleRecyclerViewAdapter<T>,
             oldItems: List<T>,
             newItems: List<T>
-        )
+        ) {
+            adapter.notifyDataSetChanged()
+        }
 
 
     }

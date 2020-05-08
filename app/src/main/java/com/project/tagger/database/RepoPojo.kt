@@ -17,43 +17,46 @@ data class UserPojo(
 @Entity(tableName = "repo")
 data class RepoPojo(
     @PrimaryKey
-    val id:Int,
+    val id: Int,
     val owner: String,
-    val name:String,
-    val desc:String
+    val name: String,
+    val desc: String
 )
 
 data class RepoWithPhotosAndVisitors(
-    @Embedded val repo:RepoPojo,
-    @Relation (
+    @Embedded val repo: RepoPojo,
+    @Relation(
         parentColumn = "id",
         entityColumn = "repoId"
     )
-    val photos:List<PhotoPojo>,
-    @Relation (
+    val photos: List<PhotoPojo>,
+    @Relation(
         parentColumn = "id",
         entityColumn = "email",
         associateBy = Junction(RepoUserJoin::class)
     )
-    val visitor:List<UserPojo>
+    val visitor: List<UserPojo>
 )
 
 @Entity(primaryKeys = ["id", "email"])
 data class RepoUserJoin(
-    val id:String,
-    val email:String
+    val id: String,
+    val email: String
 )
 
 
 @Dao
-interface RepoDao{
+interface RepoDao {
 
-//    @Query("Select * from repo")
+    //    @Query("Select * from repo")
 //    fun get():List<RepoPojo>
     @Transaction
     @Query("Select * from repo")
-    fun getRepos():List<RepoWithPhotosAndVisitors>
+    fun getRepos(): List<RepoWithPhotosAndVisitors>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun updateRepos(repos: List<RepoPojo>)
+
+    @Query("Delete from repo")
+    fun deleteAll()
 }

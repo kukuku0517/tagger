@@ -10,35 +10,35 @@
     android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
         android:id="@+id/mAppBarRegGal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         android:elevation="0dp"
+        android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBar">
 
         <androidx.appcompat.widget.Toolbar
-        android:layout_width="match_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <TextView
                 android:id="@+id/mTvRegGalRepoName"
+                style="@style/AppTheme.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginRight="8dp"
-                style="@style/AppTheme.Title"
                 tools:text="Ko's repository" />
 
             <TextView
                 android:id="@+id/mTvRegGalPro"
                 android:layout_width="wrap_content"
-                android:textSize="10sp"
                 android:layout_height="wrap_content"
                 android:text="pro"
-                android:textColor="@color/red" />
+                android:textColor="@color/red"
+                android:textSize="10sp" />
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -72,10 +72,10 @@
             <HorizontalScrollView
                 android:id="@+id/mHorizontalChipRegGal"
                 android:layout_width="0dp"
-                android:requiresFadingEdge="horizontal"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
+                android:requiresFadingEdge="horizontal"
                 android:scrollbars="none"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"

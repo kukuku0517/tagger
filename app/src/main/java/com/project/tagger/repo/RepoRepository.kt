@@ -26,6 +26,7 @@ interface RepoRepository {
 
     fun getRepos(user: UserEntity): Single<List<RepoEntity>>
     fun postRepos(repoEntity: RepoEntity): Single<RepoEntity>
+    fun deleteAllRepo()
 }
 
 class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : RepoRepository {
@@ -143,6 +144,10 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
         }
 
 
+    }
+
+    override fun deleteAllRepo(){
+        appDatabase.repoDao().deleteAll()
     }
 }
 
