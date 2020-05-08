@@ -253,6 +253,16 @@ class RegisteredGalleryFragment : Fragment() {
 
         galleryViewModel.popularTags.observe(context as LifecycleOwner, Observer { tags ->
             mChipGroupRegGal.removeAllViews()
+            mChipGroupRegGal.setOnCheckedChangeListener { group, checkedId ->
+                val chip = mChipGroupRegGal.findViewById<Chip>(checkedId)
+                //TODO using view.tag to pass data
+                if (chip!=null) {
+                    galleryViewModel.query(listOf(chip.tag as String))
+                } else {
+                    galleryViewModel.query(listOf(""))
+
+                }
+            }
             tags.forEach { tag ->
                 mChipGroupRegGal.addView(
                     (layoutInflater.inflate(
@@ -262,6 +272,7 @@ class RegisteredGalleryFragment : Fragment() {
                     ) as Chip)
                         .apply {
                             text = tag.tag
+                            this.tag = tag.tag
                             setTextColor(ContextCompat.getColor(context, R.color.white))
                             chipBackgroundColor = ColorStateList.valueOf(
                                 ContextCompat.getColor(
@@ -269,14 +280,6 @@ class RegisteredGalleryFragment : Fragment() {
                                     tagColors[Random.nextInt(tagColors.size)]
                                 )
                             )
-                            setOnCheckedChangeListener { buttonView, isChecked ->
-                                if (isChecked) {
-                                    galleryViewModel.query(listOf(tag.tag))
-                                } else {
-                                    galleryViewModel.query(listOf(""))
-
-                                }
-                            }
                         }
                 )
             }

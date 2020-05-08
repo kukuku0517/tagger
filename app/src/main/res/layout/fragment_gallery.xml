@@ -72,17 +72,28 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
+
                 android:textColor="@color/grey"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/mTvGalleryFilter"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="sdcard/emulated/0" />
 
-            <com.google.android.material.checkbox.MaterialCheckBox
+            <TextView
+                android:id="@+id/mTvGalleryFilter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/untagged_only"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/mCbGalFilterRegistered"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/mCbGalFilterRegistered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

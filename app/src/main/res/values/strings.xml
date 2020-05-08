@@ -7,4 +7,5 @@
     <string name="choose_a_tag">Choose a tag</string>
     <string name="share">Share</string>
     <string name="done">Done</string>
+    <string name="untagged_only">Untagged only</string>
 </resources>
