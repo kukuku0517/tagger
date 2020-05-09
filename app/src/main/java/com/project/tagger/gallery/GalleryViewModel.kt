@@ -3,6 +3,7 @@ package com.project.tagger.gallery
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.project.tagger.login.GetUserUC
 import com.project.tagger.repo.GetReposUC
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.peekIfNotEmpty
@@ -14,7 +15,8 @@ import kotlin.math.min
 
 class GalleryViewModel(
     val getPhotosFromGalleryUC: GetPhotosFromGalleryUC,
-    val getReposUC: GetReposUC
+    val getReposUC: GetReposUC,
+    val getUserUC: GetUserUC
 ) {
     private val photos = MutableLiveData<List<PhotoViewItem>>()
 
@@ -33,7 +35,7 @@ class GalleryViewModel(
 
     val isLoading = MutableLiveData<Boolean>().apply { value = false }
 
-    var  filterEnabled = false
+    var filterEnabled = false
 
     fun showLoading(show: Boolean) {
         isLoading.postValue(show)
@@ -53,7 +55,11 @@ class GalleryViewModel(
 
         if (currentRepo == null) {
             getReposUC.execute()
-                .map { it.first() }
+                .flatMap { repos ->
+                    getUserUC.execute()
+                        .toSingle()
+                        .map { user -> repos.firstOrNull { it.owner == user.email } }
+                }
                 .doOnSuccess { this.currentRepo = it }
         } else {
             Single.just(currentRepo)
@@ -72,9 +78,7 @@ class GalleryViewModel(
                     }
                     photos.value = it.map { PhotoViewItem(it, false) }
                     Log.i(tag(), it.size.toString())
-                    it.subList(0, min(10, it.size)).forEach {
-                        Log.i(tag(), "${it.path} ${it.folderName}")
-                    }
+
                 },
                 onError = {
                     showLoading(false)

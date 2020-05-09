@@ -14,10 +14,7 @@ import com.project.tagger.login.GetUserUC
 import com.project.tagger.login.SignOutUC
 import com.project.tagger.my.MyViewModel
 import com.project.tagger.registeredGallery.RegisteredDetailViewModel
-import com.project.tagger.repo.GetReposUC
-import com.project.tagger.repo.PostRepoUC
-import com.project.tagger.repo.RepoRepository
-import com.project.tagger.repo.RepoRepositoryImpl
+import com.project.tagger.repo.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -57,12 +54,13 @@ val repositoryModule = module {
 
     factory { GetReposUC(get(), get()) }
     factory { PostRepoUC(get()) }
+    factory { AddRepoUC(get(),get()) }
 
 }
 
 val galleryModule = module {
     factory { GetPhotosFromGalleryUC(get()) }
-    factory { GalleryViewModel(get(), get()) }
+    factory { GalleryViewModel(get(), get(),get()) }
 }
 
 val registeredModule = module {
@@ -71,7 +69,7 @@ val registeredModule = module {
     factory { GetPopularTagsUC(get()) }
     factory { DeletePhotoUC(get()) }
     factory { RegisteredDetailViewModel(get(), get(), get()) }
-    factory { RegisteredGalleryViewModel(get(), get(), get()) }
+    factory { RegisteredGalleryViewModel(get(), get(), get(),get()) }
     factory { TagViewModel(get(), get()) }
 
 }
@@ -81,5 +79,5 @@ val myModule = module {
     factory { GetUserUC(get()) }
     factory { SignOutUC(get(), get(), get()) }
 
-    factory { MyViewModel(get(), get(), get(), get()) }
+    factory { MyViewModel(get(), get(), get(), get(),get()) }
 }

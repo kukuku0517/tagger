@@ -18,12 +18,14 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.lang.Exception
 
 interface RepoRepository {
 
     fun postRepos(repoEntity: RepoEntity): Single<RepoEntity>
     fun deleteAllRepo(): Completable
     fun getRepos(user: UserEntity, refresh: Boolean = false): Single<List<RepoEntity>>
+    fun addRepo(params: Int?): Single<RepoEntity>
 }
 
 class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : RepoRepository {
@@ -64,6 +66,31 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
         return repoCache!!
     }
 
+    override fun addRepo(params: Int?): Single<RepoEntity> {
+        return Single.create<RepoEntity> { emitter ->
+            db.collection(REPO).whereEqualTo("id", params)
+                .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                    if (firebaseFirestoreException != null) {
+                        emitter.onError(firebaseFirestoreException)
+                        return@addSnapshotListener
+                    }
+
+                    if (querySnapshot?.isEmpty == false) {
+                        querySnapshot.documents.firstOrNull()?.toObject(RepoEntity::class.java)?.let {
+                            emitter.onSuccess(it)
+                        } ?: run {
+                            emitter.onError(Exception("Parsing error"))
+                        }
+                    } else {
+                        emitter.onError(Exception("No repo with id ${params}"))
+                    }
+                }
+        }.flatMap {
+            updateRepoLocal(it)
+                .toSingle()
+        }
+    }
+
 
     override fun postRepos(repoEntity: RepoEntity): Single<RepoEntity> {
         return updateRepoServer(repoEntity)
@@ -76,6 +103,11 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
             val repos = mutableListOf<RepoEntity>()
             db.runTransaction { transaction ->
                 user.repoReferences.forEach {
+                    Log.i(tag(), "getReposFromServer ${it}")
+                    val repo = transaction.get(db.document(it)).toObject(RepoEntity::class.java)
+                    repo?.let { it1 -> repos.add(it1) }
+                }
+                user.visitorReferences.forEach {
                     Log.i(tag(), "getReposFromServer ${it}")
                     val repo = transaction.get(db.document(it)).toObject(RepoEntity::class.java)
                     repo?.let { it1 -> repos.add(it1) }

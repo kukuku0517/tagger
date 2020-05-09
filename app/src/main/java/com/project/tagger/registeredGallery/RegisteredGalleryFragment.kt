@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -27,7 +28,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
-import com.project.tagger.tag.TagBottomSheetDialog
 import com.project.tagger.util.showInvisible
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SelectorAdapter
@@ -132,14 +132,24 @@ class RegisteredGalleryFragment : Fragment() {
                                 this@RegisteredGalleryFragment.tag(),
                                 "${item.tags.map { it.tag }.reduce { acc, tag -> "$acc $tag" }}"
                             )
+                            if (galleryViewModel.repoAuthState.value == RegisteredGalleryViewModel.RepoUserState.VISITOR) {
+                                Toast.makeText(
+                                    context,
+                                    "Visitors cannot edit photos",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                return
+                            } else {
+
 //                            shareImage(item.path)
 
-                            RegisteredDetailActivity.create(
-                                context,
-                                item,
-                                galleryViewModel.currentRepo.value!!,
-                                item.tags
-                            )
+                                RegisteredDetailActivity.create(
+                                    context,
+                                    item,
+                                    galleryViewModel.currentRepo.value!!,
+                                    item.tags
+                                )
+                            }
 
                         }
                     }
@@ -163,8 +173,9 @@ class RegisteredGalleryFragment : Fragment() {
             mIvRegGalRepo.setOnClickListener {
                 SelectorBottomSheetDialogBuilder(requireContext(), layoutInflater)
                     .setTitle("Select a repository")
-                    .setItems(repo.map { SelectorItem(it.name)})
-                    .setOnItemClickListener(object: SelectorAdapter.OnItemClickListener<SelectorItem>{
+                    .setItems(repo.map { SelectorItem(it.name) })
+                    .setOnItemClickListener(object :
+                        SelectorAdapter.OnItemClickListener<SelectorItem> {
                         override fun onClick(
                             dialog: BottomSheetDialog,
                             item: SelectorItem,
@@ -266,13 +277,20 @@ class RegisteredGalleryFragment : Fragment() {
             mTvRegGalRepoName.text = it.name
         })
 
-        galleryViewModel.isBackUp.observe(context as LifecycleOwner, Observer { isBackUp ->
-            if (isBackUp) {
-                mTvRegGalPro.text = "PRO"
-                mTvRegGalPro.setTextColor(ContextCompat.getColor(context!!, R.color.red))
-            } else {
-                mTvRegGalPro.text = "BASIC"
-                mTvRegGalPro.setTextColor(ContextCompat.getColor(context!!, R.color.grey))
+        galleryViewModel.repoAuthState.observe(context as LifecycleOwner, Observer { state ->
+            when (state) {
+                RegisteredGalleryViewModel.RepoUserState.PRO -> {
+                    mTvRegGalPro.text = "PRO"
+                    mTvRegGalPro.setTextColor(ContextCompat.getColor(context!!, R.color.red))
+                }
+                RegisteredGalleryViewModel.RepoUserState.BASIC -> {
+                    mTvRegGalPro.text = "BASIC"
+                    mTvRegGalPro.setTextColor(ContextCompat.getColor(context!!, R.color.grey))
+                }
+                RegisteredGalleryViewModel.RepoUserState.VISITOR -> {
+                    mTvRegGalPro.text = "VISITOR"
+                    mTvRegGalPro.setTextColor(ContextCompat.getColor(context!!, R.color.orange))
+                }
             }
         })
 

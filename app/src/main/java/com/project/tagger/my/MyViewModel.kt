@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.project.tagger.login.GetUserUC
 import com.project.tagger.login.SignOutUC
 import com.project.tagger.login.UserEntity
+import com.project.tagger.repo.AddRepoUC
 import com.project.tagger.repo.GetReposUC
 import com.project.tagger.repo.PostRepoUC
 import com.project.tagger.repo.RepoEntity
@@ -16,7 +17,8 @@ class MyViewModel(
     val userUC: GetUserUC,
     val getReposUC: GetReposUC,
     val signOutUC: SignOutUC,
-    val postRepoUC: PostRepoUC
+    val postRepoUC: PostRepoUC,
+    val addRepoUC: AddRepoUC
 ) {
 
     val user = MutableLiveData<UserEntity>()
@@ -59,6 +61,18 @@ class MyViewModel(
                 },
                 onError = {
                     Log.i(tag(), "Signout err ${it.message}")
+                }
+            )
+    }
+
+    fun addRepo(id: Int) {
+        addRepoUC.execute(id)
+            .subscribeBy(
+                onSuccess = {
+                  init()
+                },
+                onError = {
+                    Log.i(tag(), "addRepo err ${it.message}")
                 }
             )
     }

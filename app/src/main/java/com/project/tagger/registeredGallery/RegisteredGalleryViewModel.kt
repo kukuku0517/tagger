@@ -6,23 +6,34 @@ import com.project.tagger.gallery.GetPopularTagsUC
 import com.project.tagger.gallery.GetRegisteredPhotosUC
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.gallery.TagEntity
+import com.project.tagger.login.GetUserUC
+import com.project.tagger.login.UserEntity
 import com.project.tagger.repo.GetReposUC
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.tag
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 
 class RegisteredGalleryViewModel(
     val getRegisteredPhotosUC: GetRegisteredPhotosUC,
     val getReposUC: GetReposUC,
-    val getPopularTagsUC: GetPopularTagsUC
+    val getPopularTagsUC: GetPopularTagsUC,
+    val getUserUC: GetUserUC
 ) {
+    enum class RepoUserState {
+        PRO,
+        BASIC,
+        VISITOR
+    }
+
     val photos = MutableLiveData<List<PhotoEntity>>()
     val currentRepo = MutableLiveData<RepoEntity>()
     val repos = MutableLiveData<List<RepoEntity>>()
-    val isBackUp = MutableLiveData<Boolean>().apply { value = false }
+    val repoAuthState = MutableLiveData<RepoUserState>().apply { value = RepoUserState.BASIC }
     val popularTags = MutableLiveData<List<TagEntity>>()
     val isInSearchMode = MutableLiveData<Boolean>().apply { value = false }
+
 
     private fun getRepo(): Single<RepoEntity> {
         return getReposUC.execute()
@@ -35,10 +46,25 @@ class RegisteredGalleryViewModel(
                     repos.firstOrNull { it.name == currentRepoName } ?: repos.first()
                 }
             }
-            .doOnSuccess {
-                this.currentRepo.value = it
-                this.isBackUp.value = it.backUp
-            }
+            .zipWith(
+                getUserUC.execute().toSingle(),
+                BiFunction<RepoEntity, UserEntity, RepoEntity> { repo, user ->
+                    this.currentRepo.value = repo
+                    when {
+                        repo.owner != user.email -> {
+                            repoAuthState.value = RepoUserState.VISITOR
+                        }
+                        repo.backUp -> {
+                            repoAuthState.value = RepoUserState.PRO
+                        }
+                        else -> {
+                            repoAuthState.value = RepoUserState.BASIC
+
+                        }
+                    }
+
+                    repo
+                })
 
     }
 

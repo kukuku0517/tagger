@@ -45,7 +45,13 @@ class UserRepository(
                     .toObject(UserEntity::class.java)
                 val newUser: UserEntity
                 if (oldUser != null) {
-                    newUser = user.copy(repoReferences = oldUser.repoReferences)
+                    newUser = user.copy(
+                        repoReferences = oldUser.repoReferences.toMutableSet().apply { addAll(user.repoReferences) }.toList(),
+                        visitorReferences = oldUser.visitorReferences.toMutableSet().apply {
+                            addAll(
+                                user.visitorReferences
+                            )
+                        }.toList())
                     transaction.set(
                         db.collection(USER).document(user.email),
                         newUser,

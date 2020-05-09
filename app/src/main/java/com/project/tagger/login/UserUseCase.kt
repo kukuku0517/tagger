@@ -14,7 +14,8 @@ data class UserEntity(
     val name: String? = "",
     val email: String = "",
     val profileUrl: String? = "",
-    val repoReferences: List<String> = listOf()
+    val repoReferences: List<String> = listOf(),
+    val visitorReferences : List<String> = listOf()
 )
 
 class UpdateUserUC(val userRepository: UserRepository) : UseCaseSingle<UserEntity, UserEntity> {

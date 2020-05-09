@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
@@ -28,7 +29,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
-import org.koin.core.context.stopKoin
 
 class MyFragment : Fragment() {
 
@@ -123,6 +123,16 @@ class MyFragment : Fragment() {
         mRvMyRepo.adapter = SimpleRecyclerViewAdapter(requireContext(), provider)
         mRvMyRepo.layoutManager = LinearLayoutManager(requireContext())
 
+        mEtMyRepoId.setOnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> {
+                    myViewModel.addRepo(mEtMyRepoId.text.toString().toInt())
+                    mEtMyRepoId.text = null
+                }
+            }
+
+            true
+        }
         myViewModel.repos.observe(context as LifecycleOwner, Observer {
             provider.items = it
         })
