@@ -15,7 +15,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         RepoPojo::class,
         RepoUserJoin::class,
         UserPojo::class],
-    version = 2
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -30,6 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
                 AppDatabase::class.java, "tagger"
             )
                 .addMigrations(MIGRATION_0)
+                .addMigrations(MIGRATION_1)
                 .build()
             return db
         }
@@ -41,6 +42,13 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("ALTER TABLE photo ADD COLUMN usedAt TEXT NOT NULL default '2020-05-05T00:00:00'")
                 database.execSQL("ALTER TABLE photo ADD COLUMN sharedCount INTEGER NOT NULL default 0")
             }
+        }
+
+
+        private val MIGRATION_1: Migration = object : Migration(2,3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE repo ADD COLUMN isBackUp INTEGER NOT NULL default 0")
+              }
         }
     }
 

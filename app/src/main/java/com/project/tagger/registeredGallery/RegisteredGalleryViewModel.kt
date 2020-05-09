@@ -19,16 +19,25 @@ class RegisteredGalleryViewModel(
 ) {
     val photos = MutableLiveData<List<PhotoEntity>>()
     val currentRepo = MutableLiveData<RepoEntity>()
+    val repos = MutableLiveData<List<RepoEntity>>()
     val isBackUp = MutableLiveData<Boolean>().apply { value = false }
     val popularTags = MutableLiveData<List<TagEntity>>()
     val isInSearchMode = MutableLiveData<Boolean>().apply { value = false }
 
     private fun getRepo(): Single<RepoEntity> {
         return getReposUC.execute()
-            .map { it.first() }
+            .doOnSuccess { repos.value = it }
+            .map { repos ->
+                val currentRepoName = currentRepo.value?.name
+                if (currentRepoName == null) {
+                    repos.first()
+                } else {
+                    repos.firstOrNull { it.name == currentRepoName } ?: repos.first()
+                }
+            }
             .doOnSuccess {
                 this.currentRepo.value = it
-                this.isBackUp.value = it.isBackUp
+                this.isBackUp.value = it.backUp
             }
 
     }
@@ -77,5 +86,15 @@ class RegisteredGalleryViewModel(
             }
         }
         return false
+    }
+
+    fun openRepo(name: String) {
+        repos.value?.let { repos ->
+            repos.firstOrNull { it.name == name }?.let { repo ->
+                currentRepo.value = repo
+                init()
+            }
+        }
+
     }
 }

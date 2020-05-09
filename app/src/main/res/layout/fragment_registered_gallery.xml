@@ -22,23 +22,46 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <TextView
-                android:id="@+id/mTvRegGalRepoName"
-                style="@style/AppTheme.Title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginRight="8dp"
-                tools:text="Ko's repository" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/mTvRegGalPro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="pro"
-                android:textColor="@color/red"
-                android:textSize="10sp" />
+                <TextView
+                    android:id="@+id/mTvRegGalRepoName"
+                    style="@style/AppTheme.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Ko's repository" />
+
+                <TextView
+                    android:id="@+id/mTvRegGalPro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+
+                    android:text="pro"
+                    android:textColor="@color/red"
+                    android:textSize="10sp"
+
+                    app:layout_constraintBottom_toBottomOf="@id/mTvRegGalRepoName"
+                    app:layout_constraintLeft_toRightOf="@id/mTvRegGalRepoName"
+                    app:layout_constraintTop_toTopOf="@id/mTvRegGalRepoName" />
+
+                <ImageView
+android:id="@+id/mIvRegGalRepo"                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_arrow_drop_down_black_24dp"
+                    app:layout_constraintBottom_toBottomOf="@id/mTvRegGalRepoName"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/mTvRegGalRepoName" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.constraintlayout.widget.ConstraintLayout

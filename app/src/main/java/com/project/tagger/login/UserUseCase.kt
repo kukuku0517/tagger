@@ -13,7 +13,8 @@ import io.reactivex.Single
 data class UserEntity(
     val name: String? = "",
     val email: String = "",
-    val profileUrl: String? = ""
+    val profileUrl: String? = "",
+    val repoReferences: List<String> = listOf()
 )
 
 class UpdateUserUC(val userRepository: UserRepository) : UseCaseSingle<UserEntity, UserEntity> {
@@ -26,9 +27,11 @@ class UpdateUserUC(val userRepository: UserRepository) : UseCaseSingle<UserEntit
 
 class GetUserUC(val userRepository: UserRepository) : UseCaseMaybe<Void, UserEntity> {
     override fun execute(params: Void?): Maybe<UserEntity> {
-        return userRepository.getUser()?.let {
-            Maybe.just(it)
-        } ?: Maybe.empty()
+        return Maybe.defer{
+            userRepository.getUser()?.let {
+                Maybe.just(it)
+            } ?: Maybe.empty()
+        }
     }
 
 }

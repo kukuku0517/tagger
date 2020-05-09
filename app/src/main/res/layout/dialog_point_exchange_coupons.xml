@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/mTvSelectorTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginBottom="17dp"
+        android:fontFamily="@font/noto_sans_bold"
+        android:textSize="14sp"
+        android:textColor="@color/black"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mRvSelector"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_habit_selector"
+        tools:itemCount="5">
+
+    </androidx.recyclerview.widget.RecyclerView>
+</LinearLayout>

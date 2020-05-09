@@ -20,7 +20,9 @@ data class RepoPojo(
     val id: Int,
     val owner: String,
     val name: String,
-    val desc: String
+    val desc: String,
+    val isBackUp: Boolean = false
+
 )
 
 data class RepoWithPhotosAndVisitors(

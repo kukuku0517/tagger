@@ -7,8 +7,6 @@ import com.project.tagger.util.UseCaseParameterNullPointerException
 import com.project.tagger.util.UseCaseSingle
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.parcel.Parcelize
 import java.lang.Exception
 
@@ -133,7 +131,7 @@ class RegisterTagsOnPhotosUC(
         val tags = params.tags
         val photos = params.photos
         val repo = params.repo
-        val isBackUp = repo.isBackUp
+        val isBackUp = repo.backUp
         if (tags.isEmpty()) {
             return Single.error(Exception("At least 1 tag is required"))
         }

@@ -23,12 +23,16 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.tag.TagBottomSheetDialog
 import com.project.tagger.util.showInvisible
 import com.project.tagger.util.tag
+import com.project.tagger.util.widget.SelectorAdapter
+import com.project.tagger.util.widget.SelectorBottomSheetDialogBuilder
+import com.project.tagger.util.widget.SelectorItem
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
@@ -154,6 +158,27 @@ class RegisteredGalleryFragment : Fragment() {
         mRvRegGal.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
+
+        galleryViewModel.repos.observe(this, Observer { repo ->
+            mIvRegGalRepo.setOnClickListener {
+                SelectorBottomSheetDialogBuilder(requireContext(), layoutInflater)
+                    .setTitle("Select a repository")
+                    .setItems(repo.map { SelectorItem(it.name)})
+                    .setOnItemClickListener(object: SelectorAdapter.OnItemClickListener<SelectorItem>{
+                        override fun onClick(
+                            dialog: BottomSheetDialog,
+                            item: SelectorItem,
+                            position: Int
+                        ) {
+                            galleryViewModel.openRepo(item.content)
+                            dialog.dismiss()
+                        }
+
+                    })
+                    .build()
+                    .show()
+            }
+        })
         Observable.create<String> { emitter ->
             val watcher = object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -256,7 +281,7 @@ class RegisteredGalleryFragment : Fragment() {
             mChipGroupRegGal.setOnCheckedChangeListener { group, checkedId ->
                 val chip = mChipGroupRegGal.findViewById<Chip>(checkedId)
                 //TODO using view.tag to pass data
-                if (chip!=null) {
+                if (chip != null) {
                     galleryViewModel.query(listOf(chip.tag as String))
                 } else {
                     galleryViewModel.query(listOf(""))

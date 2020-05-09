@@ -1,20 +1,17 @@
 package com.project.tagger.repo
 
 import android.content.Context
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
+import android.util.Log
+import com.google.firebase.firestore.*
 import com.project.tagger.database.*
 import com.project.tagger.database.FirebaseConstants.Companion.REPO
 import com.project.tagger.database.FirebaseConstants.Companion.USER
-import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.gallery.toEntity
 import com.project.tagger.gallery.toPojo
 import com.project.tagger.login.UserEntity
+import com.project.tagger.util.Gateway
 import com.project.tagger.util.asCompletable
-import com.project.tagger.util.asMaybe
+import com.project.tagger.util.tag
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -24,42 +21,96 @@ import io.reactivex.schedulers.Schedulers
 
 interface RepoRepository {
 
-    fun getRepos(user: UserEntity): Single<List<RepoEntity>>
     fun postRepos(repoEntity: RepoEntity): Single<RepoEntity>
     fun deleteAllRepo(): Completable
+    fun getRepos(user: UserEntity, refresh: Boolean = false): Single<List<RepoEntity>>
 }
 
 class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : RepoRepository {
-    val db = FirebaseFirestore.getInstance()
+    val db = FirebaseFirestore.getInstance().apply {
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(false)
+            .build()
+        firestoreSettings = settings
 
-    override fun getRepos(user: UserEntity): Single<List<RepoEntity>> {
-        return getReposFromLocal()
-            .switchIfEmpty(getReposFromServer(user).flatMap { updateReposLocal(user, it) })
-            .switchIfEmpty(getDefaultRepos(user).flatMap { updateReposServer(it) })
-            .toSingle()
     }
 
+//    var repoCache: List<RepoEntity>? = null
+//    override fun getRepos(user: UserEntity): Single<List<RepoEntity>> {
+//        return if (repoCache != null) {
+//            Single.just(repoCache)
+//        } else {
+//            getReposFromLocal()
+//                .switchIfEmpty(getReposFromServer(user).flatMap { updateReposLocal(user, it) })
+//                .switchIfEmpty(getDefaultRepos(user).flatMap { updateReposServer(it) })
+//                .toSingle()
+//        }
+//    }
+
+
+    var repoCache: Gateway<List<RepoEntity>>? = null
+
+    override fun getRepos(user: UserEntity, refresh: Boolean): Single<List<RepoEntity>> {
+        if (refresh || true) {
+            repoCache?.clearRequest()
+
+        }
+        repoCache = repoCache ?: Gateway.from(
+            getReposFromLocal()
+                .switchIfEmpty(getReposFromServer(user).flatMap { updateReposLocal(user, it) })
+                .switchIfEmpty(getDefaultRepos(user).flatMap { updateReposServer(it) })
+                .toSingle()
+        )
+        return repoCache!!
+    }
+
+
     override fun postRepos(repoEntity: RepoEntity): Single<RepoEntity> {
-        return updateRepoServer(repoEntity).firstOrError()
+        return updateRepoServer(repoEntity)
+            .flatMapMaybe { updateRepoLocal(it) }
+            .firstOrError()
+    }
+
+    private fun getReposFromServer(user: UserEntity): Maybe<List<RepoEntity>> {
+        return Maybe.create<List<RepoEntity>> { emitter ->
+            val repos = mutableListOf<RepoEntity>()
+            db.runTransaction { transaction ->
+                user.repoReferences.forEach {
+                    Log.i(tag(), "getReposFromServer ${it}")
+                    val repo = transaction.get(db.document(it)).toObject(RepoEntity::class.java)
+                    repo?.let { it1 -> repos.add(it1) }
+                }
+                return@runTransaction repos
+            }.addOnSuccessListener {
+                if (it.isNotEmpty()) {
+                    emitter.onSuccess(it)
+                } else {
+                    emitter.onComplete()
+                }
+            }.addOnFailureListener {
+                emitter.onError(it)
+            }
+        }
+//        return db.collection(USER).document(user.email).collection(REPO).asMaybe()
     }
 
     private fun getDefaultRepos(user: UserEntity): Maybe<List<RepoEntity>> {
 
-        val defaultRepo = RepoEntity(
-            owner = user.email,
-            visitor = listOf(),
-            photos = listOf(),
-            name = "${user.name}'s repository",
-            desc = "",
-            id = "${user.email}${user.name}${System.currentTimeMillis()}".hashCode()
-        )
+        return Maybe.defer {
+            val defaultRepo = RepoEntity(
+                owner = user.email,
+                visitor = listOf(),
+                photos = listOf(),
+                name = "${user.name}'s repository",
+                desc = "",
+                id = "${user.email}${user.name}".hashCode()
+            )
+            Log.i(tag(), "getDefaultRepos ${defaultRepo.id} ${defaultRepo.name}")
 
-        return Maybe.just(listOf(defaultRepo))
+            Maybe.just(listOf(defaultRepo))
+        }
 
-    }
 
-    private fun getReposFromServer(user: UserEntity): Maybe<List<RepoEntity>> {
-        return db.collection(USER).document(user.email).collection(REPO).asMaybe()
     }
 
     private fun getReposFromLocal(): Maybe<List<RepoEntity>> {
@@ -68,7 +119,6 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
             if (repos.isNotEmpty()) {
                 Maybe.just(
                     repos.map {
-                        it.toEntity()
                         val photos = it.photos.mapNotNull {
                             appDatabase.photoDao().getPhotoWithTagsById(it.path)?.toEntity()
                         }
@@ -96,10 +146,34 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
     }
 
     private fun updateRepoServer(it: RepoEntity): Observable<RepoEntity> {
-        return db.collection(USER).document(it.owner).collection(REPO).document(it.id.toString())
-            .set(it, SetOptions.merge()).asCompletable()
-            .andThen(updateRepoLocal(it))
-            .toObservable()
+        return db.runTransaction { transaction ->
+            val user = transaction.get(db.collection(USER).document(it.owner))
+                .toObject(UserEntity::class.java)
+
+            if (user != null) {
+                val repoRef = db.collection(REPO).document(it.id.toString())
+                transaction.set(repoRef, it, SetOptions.merge())
+
+                val repos = user.repoReferences
+                if (repos.firstOrNull { it == repoRef.path } == null) {
+                    transaction.set(
+                        db.collection(USER).document(it.owner),
+                        user.copy(
+                            repoReferences = user.repoReferences.toMutableList()
+                                .apply { add(repoRef.path) }
+                        ), SetOptions.merge()
+                    )
+                }
+            }
+        }
+            .asCompletable()
+            .andThen(Observable.just(it))
+
+
+//        return db.collection(USER).document(it.owner).collection(REPO).document(it.id.toString())
+//            .set(it, SetOptions.merge()).asCompletable()
+//            .andThen(updateRepoLocal(it))
+//            .toObservable()
     }
 
     private fun updateReposLocal(
@@ -117,6 +191,7 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
 
     private fun updateRepoLocal(repos: RepoEntity): Maybe<RepoEntity> {
         return Maybe.defer {
+            Log.i(tag(), "updateRepoLocal ${repos.id} ${repos.name}")
             appDatabase.repoDao().updateRepos(listOf(repos.toPojo()))
             updateRepoDetailLocal(repos)
             Maybe.just(repos)
@@ -164,7 +239,8 @@ fun RepoWithPhotosAndVisitors.toEntity(): RepoEntity {
         photos = listOf(),
         name = this.repo.name,
         desc = this.repo.desc,
-        id = this.repo.id
+        id = this.repo.id,
+        backUp = this.repo.isBackUp
     )
 }
 
@@ -181,7 +257,8 @@ fun RepoEntity.toPojo(): RepoPojo {
         id = this.id,
         owner = this.owner,
         name = this.name,
-        desc = this.desc
+        desc = this.desc,
+        isBackUp = this.backUp
     )
 }
 

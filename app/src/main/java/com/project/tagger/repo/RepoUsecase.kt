@@ -1,6 +1,8 @@
 package com.project.tagger.repo
 
 import android.os.Parcelable
+import com.google.firebase.firestore.DocumentReference
+import com.google.gson.annotations.SerializedName
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.login.GetUserUC
 import com.project.tagger.util.UseCaseParameterNullPointerException
@@ -16,7 +18,9 @@ data class RepoEntity(
     val photos: List<PhotoEntity> = listOf(),
     val name: String = "",
     val desc: String = "",
-    val isBackUp: Boolean = false
+    @SerializedName("isBackUp", alternate = ["backUp"])
+    @field:JvmField
+    val backUp: Boolean = false
 ) : Parcelable
 
 

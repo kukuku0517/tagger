@@ -6,6 +6,7 @@ import com.project.tagger.login.GetUserUC
 import com.project.tagger.login.SignOutUC
 import com.project.tagger.login.UserEntity
 import com.project.tagger.repo.GetReposUC
+import com.project.tagger.repo.PostRepoUC
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.MutableLiveEvent
 import com.project.tagger.util.tag
@@ -14,7 +15,8 @@ import io.reactivex.rxkotlin.subscribeBy
 class MyViewModel(
     val userUC: GetUserUC,
     val getReposUC: GetReposUC,
-    val signOutUC: SignOutUC
+    val signOutUC: SignOutUC,
+    val postRepoUC: PostRepoUC
 ) {
 
     val user = MutableLiveData<UserEntity>()
@@ -44,5 +46,22 @@ class MyViewModel(
                 }
             )
     }
+
+    fun setPremium(repoEntity: RepoEntity) {
+//        if (repoEntity.isBackUp) {
+//
+//        } else {
+        postRepoUC.execute(repoEntity.copy(backUp = true))
+            .flatMap { getReposUC.execute() }
+            .subscribeBy(
+                onSuccess = {
+                    repos.value = it
+                },
+                onError = {
+                    Log.i(tag(), "Signout err ${it.message}")
+                }
+            )
+    }
+//    }
 
 }

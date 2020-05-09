@@ -15,10 +15,12 @@ import com.project.tagger.login.SignOutUC
 import com.project.tagger.my.MyViewModel
 import com.project.tagger.registeredGallery.RegisteredDetailViewModel
 import com.project.tagger.repo.GetReposUC
+import com.project.tagger.repo.PostRepoUC
 import com.project.tagger.repo.RepoRepository
 import com.project.tagger.repo.RepoRepositoryImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 
 class GlobalApp : Application() {
@@ -27,6 +29,11 @@ class GlobalApp : Application() {
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this)
         }
+        restartKoin()
+    }
+
+    fun restartKoin() {
+        stopKoin()
         startKoin {
             androidContext(this@GlobalApp)
             modules(
@@ -47,6 +54,10 @@ val repositoryModule = module {
     single { UserRepository(get(), get()) }
     single<PreferenceModel> { PreferenceModelImpl(get()) }
     single { AppDatabase.getInstance(get()) }
+
+    factory { GetReposUC(get(), get()) }
+    factory { PostRepoUC(get()) }
+
 }
 
 val galleryModule = module {
@@ -57,7 +68,6 @@ val galleryModule = module {
 val registeredModule = module {
     factory { GetRegisteredPhotosUC(get()) }
     factory { RegisterTagsOnPhotosUC(get(), get()) }
-    factory { GetReposUC(get(), get()) }
     factory { GetPopularTagsUC(get()) }
     factory { DeletePhotoUC(get()) }
     factory { RegisteredDetailViewModel(get(), get(), get()) }
@@ -69,7 +79,7 @@ val registeredModule = module {
 val myModule = module {
     factory { UpdateUserUC(get()) }
     factory { GetUserUC(get()) }
-    factory { SignOutUC(get(),get(),get()) }
+    factory { SignOutUC(get(), get(), get()) }
 
-    factory { MyViewModel(get(), get(), get()) }
+    factory { MyViewModel(get(), get(), get(), get()) }
 }
