@@ -69,7 +69,7 @@ val registeredModule = module {
 val myModule = module {
     factory { UpdateUserUC(get()) }
     factory { GetUserUC(get()) }
-    factory { SignOutUC(get(),get()) }
+    factory { SignOutUC(get(),get(),get()) }
 
     factory { MyViewModel(get(), get(), get()) }
 }

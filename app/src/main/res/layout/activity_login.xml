@@ -6,14 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".login.LoginActivity">
 
-    <TextView
+    <ImageView
+        android:id="@+id/mIvLoginLogo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/logo4"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/mTvSignIn"
         android:layout_width="wrap_content"
-        android:text="로그인"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Sign in with google"
+        app:iconSize="40dp"
+        app:icon="@drawable/google_logo"
+        android:padding="8dp"
+
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mIvLoginLogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.project.tagger.login
 
+import com.project.tagger.gallery.GalleryRepository
 import com.project.tagger.repo.RepoRepository
 import com.project.tagger.util.UseCaseCompletable
 import com.project.tagger.util.UseCaseMaybe
@@ -35,10 +36,12 @@ class GetUserUC(val userRepository: UserRepository) : UseCaseMaybe<Void, UserEnt
 
 class SignOutUC(
     val userRepository: UserRepository,
-    val repoRepository: RepoRepository
+    val repoRepository: RepoRepository,
+    val galleryRepository: GalleryRepository
 ) : UseCaseCompletable<Void> {
     override fun execute(params: Void?): Completable {
         return userRepository.signOut()
-            .andThen { repoRepository.deleteAllRepo() }
+            .andThen(repoRepository.deleteAllRepo())
+            .andThen(galleryRepository.deleteRegisteredPhotos())
     }
 }

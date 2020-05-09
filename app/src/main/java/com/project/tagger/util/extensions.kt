@@ -8,6 +8,9 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 fun Any.tag(): String {
@@ -109,4 +112,21 @@ inline fun <reified T : Any> CollectionReference.asMaybe(): Maybe<List<T>> {
             listenerRegistration.remove()
         }
     }
+}
+
+
+fun <T> Single<T>.fromIO(): Single<T> {
+    return this.subscribeOn(Schedulers.io())
+}
+
+fun <T> Single<T>.toUI(): Single<T> {
+    return this.observeOn(AndroidSchedulers.mainThread())
+}
+
+fun Completable.fromIO(): Completable {
+    return this.subscribeOn(Schedulers.io())
+}
+
+fun Completable.toUI(): Completable {
+    return this.observeOn(AndroidSchedulers.mainThread())
 }

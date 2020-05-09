@@ -26,7 +26,7 @@ interface RepoRepository {
 
     fun getRepos(user: UserEntity): Single<List<RepoEntity>>
     fun postRepos(repoEntity: RepoEntity): Single<RepoEntity>
-    fun deleteAllRepo()
+    fun deleteAllRepo(): Completable
 }
 
 class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : RepoRepository {
@@ -146,8 +146,12 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
 
     }
 
-    override fun deleteAllRepo(){
-        appDatabase.repoDao().deleteAll()
+    override fun deleteAllRepo(): Completable {
+        return Completable.fromAction {
+            appDatabase.repoDao().deleteAll()
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 }
 

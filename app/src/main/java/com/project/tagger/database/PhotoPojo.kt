@@ -93,6 +93,10 @@ interface PhotoDao {
 
     @Delete
     fun deletePhoto(photo: PhotoPojo)
+
+
+    @Query("DELETE FROM photo")
+    fun deleteAll()
 }
 
 

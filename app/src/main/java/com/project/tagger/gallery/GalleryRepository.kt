@@ -7,6 +7,9 @@ import android.provider.MediaStore
 import com.google.firebase.storage.FirebaseStorage
 import com.project.tagger.database.*
 import com.project.tagger.repo.RepoEntity
+import com.project.tagger.util.fromIO
+import com.project.tagger.util.toUI
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -23,6 +26,7 @@ interface GalleryRepository {
     fun getTags(): Single<List<TagEntity>>
     fun registerReplace(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity>
     fun deletePhoto(params: PhotoEntity): Single<PhotoEntity>
+    fun deleteRegisteredPhotos(): Completable
 }
 
 class LocalGalleryRepository(
@@ -147,7 +151,14 @@ class LocalGalleryRepository(
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
 
+    override fun deleteRegisteredPhotos(): Completable {
+        return Completable.fromAction {
+            appDatabase.photoDao().deleteAll()
+        }
+            .fromIO()
+            .toUI()
     }
 
     override fun uploadPhoto(repo: RepoEntity, photoEntity: PhotoEntity): Single<PhotoEntity> {
@@ -237,8 +248,9 @@ class LocalGalleryRepository(
         return Single.defer {
             appDatabase.photoDao().deletePhoto(params.toPhotoPojo())
             Single.just(params)
-        }.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        }
+            .fromIO()
+            .toUI()
     }
 
 
