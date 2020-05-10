@@ -10,10 +10,12 @@
         <item name="android:windowBackground">@color/background_light_grey</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:fontFamily">@font/noto_sans</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 
     <style name="AppTheme.AppBar" parent="AppTheme">
+        <item name="android:fitsSystemWindows">true</item>
         <item name="colorPrimary">@color/background_light_grey</item>
     </style>
 

@@ -320,7 +320,7 @@ class RegisteredGalleryFragment : Fragment() {
                             chipBackgroundColor = ColorStateList.valueOf(
                                 ContextCompat.getColor(
                                     context,
-                                    tagColors[Random.nextInt(tagColors.size)]
+                                    tagColors[tag.hashCode() % tagColors.size]
                                 )
                             )
                         }

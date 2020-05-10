@@ -2,6 +2,7 @@ package com.project.tagger.gallery
 
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import com.google.firebase.storage.FirebaseStorage
@@ -9,6 +10,7 @@ import com.project.tagger.database.*
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.fromIO
 import com.project.tagger.util.toUI
+import id.zelory.compressor.Compressor
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -166,7 +168,13 @@ class LocalGalleryRepository(
             val storage = FirebaseStorage.getInstance()
             val storageRef = storage.reference
 
-            var file = Uri.fromFile(File(photoEntity.path))
+//            var file = Uri.fromFile(File(photoEntity.path))
+            val compressed = Compressor(context).setMaxWidth(640)
+                .setMaxHeight(480)
+                .setQuality(75)
+                .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                .compressToFile(File(photoEntity.path))
+            val file = Uri.fromFile(compressed)
             val fileRef = storageRef.child("images/${repo.owner}/${file.lastPathSegment}")
             val uploadTask = fileRef.putFile(file)
 

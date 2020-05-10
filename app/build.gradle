@@ -107,6 +107,8 @@ dependencies {
     implementation 'com.github.iammert:MultiSearchView:0.1'
     implementation 'com.android.billingclient:billing:2.2.0'
     implementation 'com.android.billingclient:billing-ktx:2.1.0'
+
+    implementation 'id.zelory:compressor:2.1.0'
 }
 
 apply plugin: 'com.android.application'
