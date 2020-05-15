@@ -38,33 +38,31 @@ class RegisteredGalleryViewModel(
     private fun getRepo(): Single<RepoEntity> {
         return getReposUC.execute()
             .doOnSuccess { repos.value = it }
-            .map { repos ->
-                val currentRepoName = currentRepo.value?.name
-                if (currentRepoName == null) {
-                    repos.first()
-                } else {
-                    repos.firstOrNull { it.name == currentRepoName } ?: repos.first()
-                }
-            }
-            .zipWith(
-                getUserUC.execute().toSingle(),
-                BiFunction<RepoEntity, UserEntity, RepoEntity> { repo, user ->
-                    this.currentRepo.value = repo
-                    when {
-                        repo.owner != user.email -> {
-                            repoAuthState.value = RepoUserState.VISITOR
+            .flatMap { repos ->
+                getUserUC.execute().toSingle()
+                    .map { user ->
+                        val currentRepoName = currentRepo.value?.name
+                        val repo = if (currentRepoName == null) {
+                            repos.firstOrNull { it.owner == user.email } ?: repos.first()
+                        } else {
+                            repos.firstOrNull { it.name == currentRepoName } ?: repos.first()
                         }
-                        repo.backUp -> {
-                            repoAuthState.value = RepoUserState.PRO
-                        }
-                        else -> {
-                            repoAuthState.value = RepoUserState.BASIC
+                        this.currentRepo.value = repo
+                        when {
+                            repo.owner != user.email -> {
+                                repoAuthState.value = RepoUserState.VISITOR
+                            }
+                            repo.backUp -> {
+                                repoAuthState.value = RepoUserState.PRO
+                            }
+                            else -> {
+                                repoAuthState.value = RepoUserState.BASIC
 
+                            }
                         }
+                        repo
                     }
-
-                    repo
-                })
+            }
 
     }
 
