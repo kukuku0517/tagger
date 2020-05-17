@@ -9,4 +9,18 @@
     <string name="done">Done</string>
     <string name="untagged_only">Untagged only</string>
     <string name="mypage">Mypage</string>
+    <string name="sign_out_small">Sign out</string>
+    <string name="cancel">Cancel</string>
+    <string name="sign_out_confirm_message">Are you sure you want to sign out?</string>
+    <string name="add_repository">Add repository</string>
+    <string name="my_repositories">My repositories</string>
+    <string name="find_a_repository">Find a repository</string>
+    <string name="add_to_repository">Add to repository</string>
+    <string name="premium">PREMIUM</string>
+    <string name="basic">BASIC</string>
+    <string name="photo_unit">%d photos</string>
+    <string name="repo_search_ok">Available repository.</string>
+    <string name="repo_search_duplicate">Repository already added.</string>
+    <string name="repo_search_empty">No such repository.</string>
+    <string name="repo_search_error">Error occurred</string>
 </resources>

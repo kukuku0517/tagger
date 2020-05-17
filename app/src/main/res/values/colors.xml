@@ -22,4 +22,5 @@
     <color name="tag_color_1">#e5c1c5</color>
     <color name="tag_color_2">#c3e2dd</color>
     <color name="tag_color_3">#6eceda</color>
+    <color name="green">#43A047</color>
 </resources>

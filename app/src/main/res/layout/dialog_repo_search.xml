@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AppTheme.Dialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/AppTheme.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/find_a_repository"
+        android:textAlignment="center" />
+
+    <EditText
+        android:id="@+id/mEtSearchRepoId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:imeOptions="actionDone"
+        android:inputType="number" />
+
+
+    <include
+
+        android:id="@+id/mLayoutRepoItem"
+        layout="@layout/item_repo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/mTvSearchRepoConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/grey"
+        android:padding="8dp"
+        android:text="@string/add_to_repository"
+        android:textAlignment="center"
+        android:textColor="@color/white" />
+</LinearLayout>

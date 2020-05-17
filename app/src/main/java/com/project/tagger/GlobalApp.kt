@@ -13,6 +13,7 @@ import com.facebook.stetho.Stetho
 import com.project.tagger.login.GetUserUC
 import com.project.tagger.login.SignOutUC
 import com.project.tagger.my.MyViewModel
+import com.project.tagger.my.RepoSearchViewModel
 import com.project.tagger.registeredGallery.RegisteredDetailViewModel
 import com.project.tagger.repo.*
 import org.koin.android.ext.koin.androidContext
@@ -54,13 +55,15 @@ val repositoryModule = module {
 
     factory { GetReposUC(get(), get()) }
     factory { PostRepoUC(get()) }
-    factory { AddRepoUC(get(),get()) }
+    factory { AddRepoUC(get(), get()) }
+    factory { FindRepoUC(get()) }
 
+    factory { RepoSearchViewModel(get(), get(), get()) }
 }
 
 val galleryModule = module {
     factory { GetPhotosFromGalleryUC(get()) }
-    factory { GalleryViewModel(get(), get(),get()) }
+    factory { GalleryViewModel(get(), get(), get()) }
 }
 
 val registeredModule = module {
@@ -69,7 +72,7 @@ val registeredModule = module {
     factory { GetPopularTagsUC(get()) }
     factory { DeletePhotoUC(get()) }
     factory { RegisteredDetailViewModel(get(), get(), get()) }
-    factory { RegisteredGalleryViewModel(get(), get(), get(),get()) }
+    factory { RegisteredGalleryViewModel(get(), get(), get(), get()) }
     factory { TagViewModel(get(), get()) }
 
 }
@@ -79,5 +82,7 @@ val myModule = module {
     factory { GetUserUC(get()) }
     factory { SignOutUC(get(), get(), get()) }
 
-    factory { MyViewModel(get(), get(), get(), get(),get()) }
+
+    factory { MyViewModel(get(), get(), get(), get(), get()) }
+
 }

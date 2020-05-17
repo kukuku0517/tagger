@@ -25,7 +25,8 @@ interface RepoRepository {
     fun postRepos(repoEntity: RepoEntity): Single<RepoEntity>
     fun deleteAllRepo(): Completable
     fun getRepos(user: UserEntity, refresh: Boolean = false): Single<List<RepoEntity>>
-    fun addRepo(params: Int?): Single<RepoEntity>
+    fun findRepo(params: Int?): Maybe<RepoEntity>
+    fun updateRepoLocal(repos: RepoEntity): Maybe<RepoEntity>
 }
 
 class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : RepoRepository {
@@ -66,8 +67,8 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
         return repoCache!!
     }
 
-    override fun addRepo(params: Int?): Single<RepoEntity> {
-        return Single.create<RepoEntity> { emitter ->
+    override fun findRepo(params: Int?): Maybe<RepoEntity> {
+        return Maybe.create<RepoEntity> { emitter ->
             db.collection(REPO).whereEqualTo("id", params)
                 .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     if (firebaseFirestoreException != null) {
@@ -82,15 +83,11 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
                             emitter.onError(Exception("Parsing error"))
                         }
                     } else {
-                        emitter.onError(Exception("No repo with id ${params}"))
+                        emitter.onComplete()
                     }
                 }
-        }.flatMap {
-            updateRepoLocal(it)
-                .toSingle()
         }
     }
-
 
     override fun postRepos(repoEntity: RepoEntity): Single<RepoEntity> {
         return updateRepoServer(repoEntity)
@@ -221,7 +218,7 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
     }
 
 
-    private fun updateRepoLocal(repos: RepoEntity): Maybe<RepoEntity> {
+    override fun updateRepoLocal(repos: RepoEntity): Maybe<RepoEntity> {
         return Maybe.defer {
             Log.i(tag(), "updateRepoLocal ${repos.id} ${repos.name}")
             appDatabase.repoDao().updateRepos(listOf(repos.toPojo()))

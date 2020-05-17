@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.login.GetUserUC
 import com.project.tagger.login.UserRepository
+import com.project.tagger.util.UseCaseMaybe
 import com.project.tagger.util.UseCaseParameterNullPointerException
 import com.project.tagger.util.UseCaseSingle
+import io.reactivex.Maybe
 import io.reactivex.Single
 import kotlinx.android.parcel.Parcelize
 import java.lang.NullPointerException
@@ -52,21 +54,30 @@ class PostRepoUC(val repoRepository: RepoRepository) : UseCaseSingle<RepoEntity,
 class AddRepoUC(
     val repoRepository: RepoRepository,
     val userRepository: UserRepository
-) : UseCaseSingle<Int, RepoEntity> {
-    override fun execute(params: Int?): Single<RepoEntity> {
+) : UseCaseSingle<RepoEntity, RepoEntity> {
+    override fun execute(params: RepoEntity?): Single<RepoEntity> {
         params ?: return Single.error(UseCaseParameterNullPointerException())
-        return repoRepository.addRepo(params)
-            .flatMap { repo ->
-                val user = userRepository.getUser()
-                user ?: return@flatMap Single.error<RepoEntity>(NullPointerException())
+        return Single.defer {
+            val user = userRepository.getUser()
+            user ?: return@defer Single.error<RepoEntity>(NullPointerException())
 
-                val newUser =
-                    user.copy(visitorReferences = user.visitorReferences.toMutableSet().apply {
-                        add(repo.getPath())
-                    }.toList())
-                userRepository.updateUser(newUser)
-                    .andThen(Single.just(repo))
-            }
+            val newUser =
+                user.copy(visitorReferences = user.visitorReferences.toMutableSet().apply {
+                    add(params.getPath())
+                }.toList())
+            userRepository.updateUser(newUser)
+                .andThen(Single.just(params))
+        }
+            .flatMapMaybe { repoRepository.updateRepoLocal(it) }
+            .toSingle()
     }
+}
 
+class FindRepoUC(
+    val repoRepository: RepoRepository
+) : UseCaseMaybe<Int, RepoEntity> {
+    override fun execute(params: Int?): Maybe<RepoEntity> {
+        params ?: return Maybe.error(UseCaseParameterNullPointerException())
+        return repoRepository.findRepo(params)
+    }
 }

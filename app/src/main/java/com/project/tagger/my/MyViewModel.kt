@@ -24,6 +24,7 @@ class MyViewModel(
     val user = MutableLiveData<UserEntity>()
     val repos = MutableLiveData<List<RepoEntity>>()
     val signOutEvent = MutableLiveEvent(false)
+    val signOutDialogEvent = MutableLiveEvent(false)
 
     fun init() {
         userUC.execute()
@@ -37,6 +38,12 @@ class MyViewModel(
     }
 
     fun signOut() {
+        signOutDialogEvent.value = true
+
+    }
+
+    fun signOutConfirmed(){
+
         signOutUC.execute()
             .subscribeBy(
                 onComplete = {
@@ -64,18 +71,5 @@ class MyViewModel(
                 }
             )
     }
-
-    fun addRepo(id: Int) {
-        addRepoUC.execute(id)
-            .subscribeBy(
-                onSuccess = {
-                  init()
-                },
-                onError = {
-                    Log.i(tag(), "addRepo err ${it.message}")
-                }
-            )
-    }
-//    }
 
 }
