@@ -16,6 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-9887170196921581~8452876640"/>
         <activity android:name=".premium.PurchaseActivity"></activity>
         <activity android:name=".registeredGallery.RegisteredDetailActivity" />
         <activity android:name=".login.LoginActivity">

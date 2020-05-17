@@ -10,6 +10,7 @@ import com.project.tagger.login.UserRepository
 import com.project.tagger.registeredGallery.RegisteredGalleryViewModel
 import com.project.tagger.tag.TagViewModel
 import com.facebook.stetho.Stetho
+import com.google.android.gms.ads.MobileAds
 import com.project.tagger.login.GetUserUC
 import com.project.tagger.login.SignOutUC
 import com.project.tagger.my.MyViewModel
@@ -28,6 +29,7 @@ class GlobalApp : Application() {
             Stetho.initializeWithDefaults(this)
         }
         restartKoin()
+        MobileAds.initialize(this, BuildConfig.ADMOB_KEY)
     }
 
     fun restartKoin() {

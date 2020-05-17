@@ -26,6 +26,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildTypes.each {
+        it.buildConfigField 'String', 'ADMOB_KEY', ADMOB_KEY
+    }
 }
 
 dependencies {
@@ -109,6 +112,8 @@ dependencies {
     implementation 'com.android.billingclient:billing-ktx:2.1.0'
 
     implementation 'id.zelory:compressor:2.1.0'
+
+    implementation 'com.google.firebase:firebase-ads:18.0.0'
 }
 
 apply plugin: 'com.android.application'
