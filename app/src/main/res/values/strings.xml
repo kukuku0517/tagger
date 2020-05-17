@@ -23,4 +23,7 @@
     <string name="repo_search_duplicate">Repository already added.</string>
     <string name="repo_search_empty">No such repository.</string>
     <string name="repo_search_error">Error occurred</string>
+    <string name="basic_description">- Tag photos (without backup)\n- Edit Tags(without backup)\n- Share photos</string>
+    <string name="premium_description" >- Tag photos (with permanent backup)\n- Edit Tags(with permanent backup)\n- Share photos\n- Share the repository</string>
+    <string name="upgrade">Upgrade!</string>
 </resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".premium.PurchaseActivity">
+
+    <TextView
+        style="@style/AppTheme.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Upgrade your repository" />
+
+    <TextView
+        style="@style/AppTheme.SubTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:text="to backup and share your photos" />
+
+
+    <com.project.tagger.util.widget.ShadowLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:sl_cornerRadius="8dp"
+        app:sl_shadowColor="@color/shadow"
+        app:sl_shadowRadius="8dp">
+
+        <com.project.tagger.util.widget.RoundCornerLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:roundCornerRadius="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@string/basic" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@string/basic_description" />
+            </LinearLayout>
+        </com.project.tagger.util.widget.RoundCornerLayout>
+    </com.project.tagger.util.widget.ShadowLayout>
+
+    <com.project.tagger.util.widget.ShadowLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:sl_cornerRadius="8dp"
+        app:sl_shadowColor="@color/shadow"
+        app:sl_shadowRadius="8dp">
+
+        <com.project.tagger.util.widget.RoundCornerLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:roundCornerRadius="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/noto_sans_bold"
+                    android:padding="8dp"
+                    android:text="@string/premium"
+                    android:textColor="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@string/premium_description" />
+            </LinearLayout>
+        </com.project.tagger.util.widget.RoundCornerLayout>
+    </com.project.tagger.util.widget.ShadowLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        android:id="@+id/mBtnPurchaseUpgrade"
+        android:text="@string/upgrade"
+        android:textAlignment="center"
+        android:textColor="@color/white" />
+</LinearLayout>
