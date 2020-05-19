@@ -6,6 +6,7 @@ import com.project.tagger.gallery.PhotoEntity
 @Entity(tableName = "photo")
 data class PhotoPojo(
     @PrimaryKey
+    val id:String,
     val path: String,
     val remotePath: String?,
     val isDirectory: Boolean,
@@ -27,16 +28,16 @@ data class TagPOJO(
 )
 
 
-@Entity(primaryKeys = ["path", "tag"])
+@Entity(primaryKeys = ["id", "tag"])
 data class PhotoTagJoin(
-    val path: String,
+    val id: String,
     val tag: String
 )
 
 data class PhotoWithTags(
     @Embedded val photos: PhotoPojo,
     @Relation(
-        parentColumn = "path",
+        parentColumn = "id",
         entityColumn = "tag",
         associateBy = Junction(PhotoTagJoin::class)
     )
@@ -48,7 +49,7 @@ data class TagWithPhotos(
     @Embedded val tag: TagPOJO,
     @Relation(
         parentColumn = "tag",
-        entityColumn = "path",
+        entityColumn = "id",
         associateBy = Junction(PhotoTagJoin::class)
     )
     val photos: List<PhotoPojo>
@@ -73,7 +74,7 @@ interface PhotoDao {
     fun getPhotosWithTagsByIds(ids: List<String>): List<PhotoWithTags>
 
     @Transaction
-    @Query("SELECT * FROM photo where path = :id")
+    @Query("SELECT * FROM photo where id = :id")
     fun getPhotoWithTagsById(id: String): PhotoWithTags?
 
 

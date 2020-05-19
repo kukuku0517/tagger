@@ -49,6 +49,7 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                 TagBottomSheetDialog.create(
                     galleryViewModel.selectedPhotos.toMutableList().map {
                         PhotoEntity(
+                            id = "${it.path}${galleryViewModel.currentRepo?.id ?: Math.random()}",
                             path = it.path,
                             folderName = it.folderName
                         )
@@ -165,7 +166,7 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
                         containerView.mTvGalleryFolderRegisteredCount?.text =
                             "${item.galleryEntity.registeredCount}"
                         containerView.mTvGalleryFolderCount?.text =
-                            "/ ${item.galleryEntity.childCount}개"
+                            "/ ${getString(R.string.photo_unit).format(item.galleryEntity.childCount)}"
                     }
                 }
 

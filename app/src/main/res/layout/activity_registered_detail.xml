@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +12,7 @@
     tools:background="@color/colorPrimary">
 
 
-    <ImageView
+    <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/mIvRegDetail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -58,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/choose_a_tag"
-        android:imeOptions="actionSearch"
+        android:imeOptions="actionDone"
         android:inputType="text"
         android:padding="8dp"
         android:theme="@style/AppTheme.Search"

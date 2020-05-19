@@ -21,6 +21,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.ads.AdRequest
@@ -96,6 +97,7 @@ class RegisteredGalleryFragment : Fragment() {
                                     RequestOptions().centerCrop()
                                         .fitCenter()
                                         .placeholder(R.drawable.gallery_placeholder)
+                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 )
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .into(containerView.mIvRegGalGallery)
@@ -167,6 +169,7 @@ class RegisteredGalleryFragment : Fragment() {
                     }
                 })
         }
+        mRvRegGal.itemAnimator = null
         mRvRegGal.adapter = adapter
         mRvRegGal.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)

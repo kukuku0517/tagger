@@ -21,7 +21,8 @@ data class RepoPojo(
     val owner: String,
     val name: String,
     val desc: String,
-    val isBackUp: Boolean = false
+    val isBackUp: Boolean = false,
+    val thumb:String
 
 )
 

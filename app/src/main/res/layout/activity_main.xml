@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mLayoutMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -34,26 +36,19 @@
             android:background="@color/light_grey"
             app:layout_constraintBottom_toTopOf="@id/mTlMain" />
 
-
-        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/mAdView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ads:layout_constraintBottom_toTopOf="@id/mTlMain"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="bottom|center"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
             ads:layout_constraintBottom_toBottomOf="parent"
-            ads:layout_constraintLeft_toLeftOf="parent"
-            ads:layout_constraintRight_toRightOf="parent" />
+            android:id="@+id/mLayoutAdView"
+            android:gravity="center"
+            android:layout_height="wrap_content"/>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/mTlMain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/mLayoutAdView">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="24dp"

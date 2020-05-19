@@ -21,6 +21,7 @@ data class RepoEntity(
     val photos: List<PhotoEntity> = listOf(),
     val name: String = "",
     val desc: String = "",
+    val thumb:String,
     @SerializedName("isBackUp", alternate = ["backUp"])
     @field:JvmField
     val backUp: Boolean = false

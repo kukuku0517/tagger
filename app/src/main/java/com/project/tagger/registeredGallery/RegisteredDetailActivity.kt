@@ -10,6 +10,7 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -141,9 +142,14 @@ class RegisteredDetailActivity : AppCompatActivity() {
 
         mEtRegDetail.setOnEditorActionListener { v, actionId, event ->
             when (actionId) {
-                EditorInfo.IME_ACTION_SEARCH -> {
-                    tagViewModel.addTag(mEtRegDetail.text.toString())
-                    mEtRegDetail.text = null
+                EditorInfo.IME_ACTION_DONE -> {
+                    val text = mEtRegDetail.text.toString()
+                    if (text.isBlank()){
+                        Toast.makeText(this, getString(R.string.tag_empty_message),Toast.LENGTH_LONG).show()
+                    }else{
+                        tagViewModel.addTag(text)
+                        mEtRegDetail.text = null
+                    }
                 }
             }
 

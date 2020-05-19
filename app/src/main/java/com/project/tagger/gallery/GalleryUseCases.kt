@@ -13,6 +13,7 @@ import java.lang.Exception
 
 @Parcelize
 data class PhotoEntity(
+    val id:String,
     val path: String = "",
     val remotePath: String? = "",
     val tags: List<TagEntity> = listOf(),

@@ -20,7 +20,8 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-9887170196921581~8452876640"/>
         <activity android:name=".premium.PurchaseActivity"></activity>
-        <activity android:name=".registeredGallery.RegisteredDetailActivity" />
+        <activity android:name=".registeredGallery.RegisteredDetailActivity"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

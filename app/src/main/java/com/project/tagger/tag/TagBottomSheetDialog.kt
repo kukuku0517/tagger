@@ -176,7 +176,7 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
 
         mEtTag.setOnEditorActionListener { v, actionId, event ->
             when (actionId) {
-                EditorInfo.IME_ACTION_SEARCH -> {
+                EditorInfo.IME_ACTION_DONE -> {
                     tagViewModel.addTag(mEtTag.text.toString())
                     mEtTag.text = null
                 }

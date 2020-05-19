@@ -211,7 +211,7 @@ class LocalGalleryRepository(
             photoWithTags.tags.forEach {
                 appDatabase.photoDao().createOrUpdateWithTag(
                     PhotoTagJoin(
-                        path = photoWithTags.photos.path,
+                        id = photoWithTags.photos.id,
                         tag = it.tag
                     )
                 )
@@ -228,20 +228,20 @@ class LocalGalleryRepository(
 
             appDatabase.photoDao().createOrUpdate(photoWithTags.photos)
 
-            val photo = appDatabase.photoDao().getPhotoWithTagsById(photoWithTags.photos.path)
+            val photo = appDatabase.photoDao().getPhotoWithTagsById(photoWithTags.photos.id)
             photo ?: throw NullPointerException()
 
             photoWithTags.tags.forEach {
                 appDatabase.tagDao().createOrUpdate(it)
             }
 
-            val oldTagJoin = photo.tags.map { PhotoTagJoin(path = photo.photos.path, tag = it.tag) }
+            val oldTagJoin = photo.tags.map { PhotoTagJoin(id = photo.photos.id, tag = it.tag) }
             appDatabase.photoDao().deleteTags(oldTagJoin)
 
             photoWithTags.tags.forEach {
                 appDatabase.photoDao().createOrUpdateWithTag(
                     PhotoTagJoin(
-                        path = photoWithTags.photos.path,
+                        id = photoWithTags.photos.id,
                         tag = it.tag
                     )
                 )
@@ -298,6 +298,7 @@ data class GridViewItem(
 
 fun PhotoEntity.toPhotoPojo(): PhotoPojo {
     return PhotoPojo(
+        id = this.id,
         path = this.path,
         remotePath = this.remotePath,
         isDirectory = this.isDirectory,
@@ -314,6 +315,7 @@ fun PhotoEntity.toPhotoPojo(): PhotoPojo {
 fun PhotoEntity.toPojo(): PhotoWithTags {
     return PhotoWithTags(
         photos = PhotoPojo(
+            id = this.id,
             path = this.path,
             remotePath = this.remotePath,
             isDirectory = this.isDirectory,
@@ -334,6 +336,7 @@ fun TagEntity.toPojo(): TagPOJO {
 
 fun PhotoWithTags.toEntity(): PhotoEntity {
     return PhotoEntity(
+        id = this.photos.id,
         path = this.photos.path,
         remotePath = this.photos.remotePath,
         isDirectory = false,

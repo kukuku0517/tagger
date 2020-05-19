@@ -1,10 +1,13 @@
 package com.project.tagger.main
 
-import androidx.appcompat.app.AppCompatActivity
+import android.R.attr.button
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.google.android.material.tabs.TabLayout
 import com.project.tagger.BuildConfig
 import com.project.tagger.R
@@ -15,6 +18,7 @@ import com.project.tagger.util.Initializer
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var adapter: MainPagerAdapter
@@ -22,12 +26,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val mAdView = AdView(this)
+        mAdView.adSize = AdSize.BANNER
         val adRequest = AdRequest.Builder().build()
         if(BuildConfig.DEBUG){
             mAdView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
         }else{
             mAdView.adUnitId = "ca-app-pub-9887170196921581/2335218521"
         }
+        mLayoutAdView.addView(mAdView)
         mAdView.loadAd(adRequest)
 
         Initializer(this).getPermissions(this, *Initializer.permissions)
@@ -54,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
 
     override fun onBackPressed() {
         val currentFragment = adapter.getItemByTag(mVpMain.currentItem, mVpMain.id)

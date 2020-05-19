@@ -4,7 +4,7 @@
     <string name="select_all">SELECT ALL</string>
     <string name="navigate">GALLERY</string>
     <string name="unselect_all">UNSELECT ALL</string>
-    <string name="choose_a_tag">Choose a tag</string>
+    <string name="choose_a_tag">Add a tag</string>
     <string name="share">Share</string>
     <string name="done">Done</string>
     <string name="untagged_only">Untagged only</string>
@@ -26,4 +26,5 @@
     <string name="basic_description">- Tag photos (without backup)\n- Edit Tags(without backup)\n- Share photos</string>
     <string name="premium_description" >- Tag photos (with permanent backup)\n- Edit Tags(with permanent backup)\n- Share photos\n- Share the repository</string>
     <string name="upgrade">Upgrade!</string>
+    <string name="tag_empty_message">Tag must not be empty</string>
 </resources>

@@ -68,7 +68,7 @@ class MyFragment : Fragment() {
                     )
                 containerView.mTvRepoPhotos.text =
                     getString(R.string.photo_unit).format(item.photos.size)
-
+                Glide.with(requireContext()).load(item.thumb).into(containerView.mIvRepoItemThumb)
                 containerView.mIvRepoItemShare.setOnClickListener {
 
                     val clipboardManager: ClipboardManager =

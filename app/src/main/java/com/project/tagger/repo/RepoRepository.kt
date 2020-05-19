@@ -61,7 +61,10 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
         repoCache = repoCache ?: Gateway.from(
             getReposFromLocal()
                 .switchIfEmpty(getReposFromServer(user).flatMap { updateReposLocal(user, it) })
-                .switchIfEmpty(getDefaultRepos(user).flatMap { updateReposServer(it) })
+                .switchIfEmpty(getDefaultRepos(user)
+                    .flatMap { updateReposServer(it) }
+                    .flatMap { updateReposLocal(user, it) }
+                )
                 .toSingle()
         )
         return repoCache!!
@@ -132,7 +135,8 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
                 photos = listOf(),
                 name = "${user.name}'s repository",
                 desc = "",
-                id = "${user.email}${user.name}".hashCode()
+                id = "${user.email}${user.name}".hashCode(),
+                thumb = user.profileUrl?:""
             )
             Log.i(tag(), "getDefaultRepos ${defaultRepo.id} ${defaultRepo.name}")
 
@@ -149,7 +153,7 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
                 Maybe.just(
                     repos.map {
                         val photos = it.photos.mapNotNull {
-                            appDatabase.photoDao().getPhotoWithTagsById(it.path)?.toEntity()
+                            appDatabase.photoDao().getPhotoWithTagsById(it.id)?.toEntity()
                         }
                         it.toEntity().copy(photos = photos)
                     }
@@ -232,6 +236,8 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
 
     private fun updateRepoDetailLocal(repo: RepoEntity) {
         repo.photos.forEach {
+            Log.i(tag(), "updateRepoLocalDetail ${repo.id} ${it.path}")
+
             val photoWithTags = it.toPojo()
             appDatabase.photoDao().createOrUpdate(photoWithTags.photos)
             photoWithTags.tags.forEach {
@@ -240,7 +246,7 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
             photoWithTags.tags.forEach {
                 appDatabase.photoDao().createOrUpdateWithTag(
                     PhotoTagJoin(
-                        path = photoWithTags.photos.path,
+                        id = photoWithTags.photos.path,
                         tag = it.tag
                     )
                 )
@@ -269,7 +275,8 @@ fun RepoWithPhotosAndVisitors.toEntity(): RepoEntity {
         name = this.repo.name,
         desc = this.repo.desc,
         id = this.repo.id,
-        backUp = this.repo.isBackUp
+        backUp = this.repo.isBackUp,
+        thumb = this.repo.thumb
     )
 }
 
@@ -287,7 +294,8 @@ fun RepoEntity.toPojo(): RepoPojo {
         owner = this.owner,
         name = this.name,
         desc = this.desc,
-        isBackUp = this.backUp
+        isBackUp = this.backUp,
+        thumb = this.thumb
     )
 }
 

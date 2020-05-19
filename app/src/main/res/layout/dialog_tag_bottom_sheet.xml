@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/choose_a_tag"
-        android:imeOptions="actionSearch"
+        android:imeOptions="actionDone"
         android:inputType="text"
         android:theme="@style/AppTheme.Search" />
 
