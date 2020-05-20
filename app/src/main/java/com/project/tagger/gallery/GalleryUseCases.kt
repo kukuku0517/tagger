@@ -1,6 +1,7 @@
 package com.project.tagger.gallery
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.repo.RepoRepository
 import com.project.tagger.util.UseCaseParameterNullPointerException
@@ -13,13 +14,15 @@ import java.lang.Exception
 
 @Parcelize
 data class PhotoEntity(
-    val id:String ="",
+    val id: String = "",
     val path: String = "",
     val remotePath: String? = "",
     val tags: List<TagEntity> = listOf(),
-    val isDirectory: Boolean = false,
+    @SerializedName("isDirectory", alternate = ["directory"])
+    val directory: Boolean = false,
     val folderName: String? = "",
-    val isRegistered: Boolean = false,
+    @SerializedName("isRegistered", alternate = ["registered"])
+    val registered: Boolean = false,
     val repoId: Int? = null,
 
     val createdAt: String = "2020-05-05T00:00:00",

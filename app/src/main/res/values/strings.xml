@@ -9,12 +9,12 @@
     <string name="done">Done</string>
     <string name="untagged_only">Untagged only</string>
     <string name="mypage">MYPAGE</string>
-    <string name="sign_out_small">Sign out</string>
+    <string name="sign_out_small">Log out</string>
     <string name="cancel">Cancel</string>
     <string name="sign_out_confirm_message">Are you sure you want to sign out?</string>
     <string name="add_repository">Add repository</string>
     <string name="my_repositories">My repositories</string>
-    <string name="find_a_repository">Find a repository</string>
+    <string name="find_a_repository">Add a repository</string>
     <string name="add_to_repository">Add to repository</string>
     <string name="premium">PREMIUM</string>
     <string name="basic">BASIC</string>
@@ -29,4 +29,6 @@
     <string name="tag_empty_message">Tag must not be empty</string>
     <string name="tagged_only">TAGGED ONLY</string>
     <string name="all">ALL</string>
+    <string name="find_repo_message">You can copy your repository id in the mypage tab.\nAsk your friends for the id and share photos!</string>
+    <string name="sharetag"><b>SHARE</b>TAG</string>
 </resources>

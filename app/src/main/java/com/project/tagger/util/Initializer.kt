@@ -65,21 +65,21 @@ class Initializer(
 
             var permissionMessage = "특정 기능을 사용하기 위해 아래의 권한이 필요합니다.\n" +
                     "\n"
-            if (permissions.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                || permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE)
-            ) {
-                permissionMessage +=
-                    "[저장소](선택)\n" +
-                            "- 프로필 설정, 미션 인증(사진 전송)을 위한 갤러리 접근\n" +
-                            "- 미션 인증 사진 자동저장\n" +
-                            "\n"
-            }
-            if (permissions.contains(Manifest.permission.CAMERA)) {
-                permissionMessage +=
-                    "카메라[선택]\n" +
-                            "- 프로필, 미션 인증 사진 직접 촬영\n" +
-                            "\n"
-            }
+//            if (permissions.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                || permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE)
+//            ) {
+//                permissionMessage +=
+//                    "[저장소](선택)\n" +
+//                            "- 프로필 설정, 미션 인증(사진 전송)을 위한 갤러리 접근\n" +
+//                            "- 미션 인증 사진 자동저장\n" +
+//                            "\n"
+//            }
+//            if (permissions.contains(Manifest.permission.CAMERA)) {
+//                permissionMessage +=
+//                    "카메라[선택]\n" +
+//                            "- 프로필, 미션 인증 사진 직접 촬영\n" +
+//                            "\n"
+//            }
 
             permissionMessage += "[다시 묻지 않음]을 설정하신 경우에는\n앱정보>권한 승인 후 이용해주세요."
 

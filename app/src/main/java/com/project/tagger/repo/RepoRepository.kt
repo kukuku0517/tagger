@@ -246,7 +246,7 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
             photoWithTags.tags.forEach {
                 appDatabase.photoDao().createOrUpdateWithTag(
                     PhotoTagJoin(
-                        id = photoWithTags.photos.path,
+                        id = photoWithTags.photos.id,
                         tag = it.tag
                     )
                 )

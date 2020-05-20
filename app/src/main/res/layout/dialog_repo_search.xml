@@ -16,12 +16,22 @@
         android:text="@string/find_a_repository"
         android:textAlignment="center" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="@style/AppTheme.PlainText"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/find_repo_message"
+        android:textAlignment="center" />
+
     <EditText
         android:id="@+id/mEtSearchRepoId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:imeOptions="actionDone"
+        android:imeOptions="actionSearch"
         android:inputType="number" />
 
 

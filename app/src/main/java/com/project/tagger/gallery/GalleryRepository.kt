@@ -301,7 +301,7 @@ fun PhotoEntity.toPhotoPojo(): PhotoPojo {
         id = this.id,
         path = this.path,
         remotePath = this.remotePath,
-        isDirectory = this.isDirectory,
+        isDirectory = this.directory,
         folderName = this.folderName,
         repoId = this.repoId,
 
@@ -318,7 +318,7 @@ fun PhotoEntity.toPojo(): PhotoWithTags {
             id = this.id,
             path = this.path,
             remotePath = this.remotePath,
-            isDirectory = this.isDirectory,
+            isDirectory = this.directory,
             folderName = this.folderName,
             repoId = this.repoId,
 
@@ -339,7 +339,7 @@ fun PhotoWithTags.toEntity(): PhotoEntity {
         id = this.photos.id,
         path = this.photos.path,
         remotePath = this.photos.remotePath,
-        isDirectory = false,
+        directory = false,
         folderName = null,
         tags = this.tags.map { it.toEntity() },
         repoId = this.photos.repoId,

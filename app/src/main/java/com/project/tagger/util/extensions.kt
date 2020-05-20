@@ -130,3 +130,13 @@ fun Completable.fromIO(): Completable {
 fun Completable.toUI(): Completable {
     return this.observeOn(AndroidSchedulers.mainThread())
 }
+
+public inline fun <S, T : S> Iterable<T>.reduceIfEmpty(default:S, operation: (acc: S, T) -> S): S {
+    val iterator = this.iterator()
+    if (!iterator.hasNext()) return default
+    var accumulator: S = iterator.next()
+    while (iterator.hasNext()) {
+        accumulator = operation(accumulator, iterator.next())
+    }
+    return accumulator
+}

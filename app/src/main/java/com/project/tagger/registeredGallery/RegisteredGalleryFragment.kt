@@ -24,14 +24,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
+import com.project.tagger.util.reduceIfEmpty
+import com.project.tagger.util.show
 import com.project.tagger.util.showInvisible
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SelectorAdapter
@@ -45,7 +44,6 @@ import kotlinx.android.synthetic.main.item_registered_gallery.view.*
 import org.koin.android.ext.android.inject
 import java.io.File
 import java.util.concurrent.TimeUnit
-import kotlin.random.Random
 
 
 class RegisteredGalleryFragment : Fragment() {
@@ -87,7 +85,7 @@ class RegisteredGalleryFragment : Fragment() {
                     }
 
                     override fun onBindView(containerView: View, item: PhotoEntity) {
-                        if (!item.isDirectory) {
+                        if (!item.directory) {
 
                             Glide
                                 .with(context)
@@ -129,13 +127,13 @@ class RegisteredGalleryFragment : Fragment() {
 
                     override fun onClick(adapterPosition: Int) {
                         val item = items[adapterPosition]
-                        if (item.isDirectory) {
+                        if (item.directory) {
                             Log.i(this@RegisteredGalleryFragment.tag(), "onClick ${item.path}")
 
                         } else {
                             Log.i(
                                 this@RegisteredGalleryFragment.tag(),
-                                "${item.tags.map { it.tag }.reduce { acc, tag -> "$acc $tag" }}"
+                                "${item.tags.map { it.tag }.reduceIfEmpty("", { acc, tag -> "$acc $tag" })}"
                             )
                             if (galleryViewModel.repoAuthState.value == RegisteredGalleryViewModel.RepoUserState.VISITOR) {
                                 Toast.makeText(
@@ -276,7 +274,7 @@ class RegisteredGalleryFragment : Fragment() {
         galleryViewModel.photos.observe(context as LifecycleOwner, Observer {
             Log.i(tag(), "get new photos")
             adapter.provider.items = it
-
+            mTvRegGalEmpty.show(it.isEmpty())
         })
 
         galleryViewModel.currentRepo.observe(context as LifecycleOwner, Observer {

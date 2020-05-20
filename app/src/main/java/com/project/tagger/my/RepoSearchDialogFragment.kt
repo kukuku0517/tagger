@@ -41,7 +41,7 @@ class RepoSearchDialogFragment : DialogFragment() {
 
         mEtSearchRepoId.setOnEditorActionListener { v, actionId, event ->
             when (actionId) {
-                EditorInfo.IME_ACTION_DONE -> {
+                EditorInfo.IME_ACTION_SEARCH -> {
                     repoSearchViewModel.searchRepo(mEtSearchRepoId.text.toString().toInt())
                 }
             }

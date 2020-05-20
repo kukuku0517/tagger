@@ -61,6 +61,7 @@ class MyFragment : Fragment() {
             }
 
             override fun onBindView(containerView: View, item: RepoEntity) {
+                Glide.with(requireContext()).load(R.drawable.ic_content_copy_black_24dp).into(containerView.mIvRepoItemShare)
                 containerView.mTvRepoTitle.text = item.name
                 containerView.mTvRepoPremium.text =
                     if (item.backUp) getString(R.string.premium) else getString(
