@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
@@ -14,12 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="0dp"
-        android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBar">
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,16 +26,24 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/mTvRegGalRepoName"
                     style="@style/AppTheme.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginRight="8dp"
+                    android:includeFontPadding="false"
+                    android:text="REPOSITORY"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/mTvRegGalRepoName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/mTvRegGalPro"
                     app:layout_constraintTop_toTopOf="parent"
+
                     tools:text="Ko's repository" />
 
                 <TextView
@@ -48,28 +55,29 @@
                     android:text="pro"
                     android:textColor="@color/red"
                     android:textSize="10sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
 
-                    app:layout_constraintBottom_toBottomOf="@id/mTvRegGalRepoName"
-                    app:layout_constraintLeft_toRightOf="@id/mTvRegGalRepoName"
-                    app:layout_constraintTop_toTopOf="@id/mTvRegGalRepoName" />
+                    app:layout_constraintRight_toLeftOf="@id/mIvRegGalRepo"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/mIvRegGalRepo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:padding="16dp"
                     android:src="@drawable/ic_arrow_drop_down_black_24dp"
-                    app:layout_constraintBottom_toBottomOf="@id/mTvRegGalRepoName"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/mTvRegGalRepoName" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:orientation="horizontal">
+            android:layout_height="?attr/actionBarSize"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
             <EditText
                 android:id="@+id/mEtRegGalSearch"

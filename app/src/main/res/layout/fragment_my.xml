@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -9,32 +10,37 @@
             type="com.project.tagger.my.MyViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
+            android:theme="@style/AppTheme.AppBar"
+            android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:elevation="8dp"
 
-                android:fitsSystemWindows="true"
-                android:theme="@style/AppTheme.AppBar">
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/mypage"
-                    android:theme="@style/AppTheme.SubTitle" />
+                    android:theme="@style/AppTheme.Title" />
             </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -102,12 +108,12 @@
                 tools:listitem="@layout/item_repo" />
 
             <ImageView
-                android:padding="8dp"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:id="@+id/mBtnMyAddRepo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:id="@+id/mBtnMyAddRepo"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
                 android:src="@drawable/ic_add_circle_black_24dp"
                 android:tint="@color/colorPrimary" />
 
@@ -134,18 +140,18 @@
 
                 <TextView
                     android:id="@+id/mTvMySignOut"
-                    android:foreground="?attr/selectableItemBackground"
+                    style="@style/AppTheme.Menu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:foreground="?attr/selectableItemBackground"
                     android:onClick="@{()->vm.signOut()}"
-                    style="@style/AppTheme.Menu"
                     android:padding="8dp"
                     android:text="@string/sign_out_small"
                     app:layout_constraintBottom_toBottomOf="parent" />
             </LinearLayout>
 
         </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

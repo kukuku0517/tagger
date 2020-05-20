@@ -65,27 +65,33 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
         }
 
         mCbGalSelectAll.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                galleryViewModel.selectAll()
-            } else {
+            if (!isChecked) {
                 galleryViewModel.unselectAll()
             }
         }
 
-        mCbGalFilterRegistered.setOnCheckedChangeListener { buttonView, isChecked ->
-            galleryViewModel.enableRegisterFilter(isChecked)
+        mTvGalleryFilter.setOnClickListener {
+            galleryViewModel.toggleRegisterFilter()
         }
+
+        galleryViewModel.filterEnabled.observe(context as LifecycleOwner, Observer {
+
+            mTvGalleryFilter.text = if (it) getString(R.string.tagged_only) else getString(R.string.all)
+        })
 
         galleryViewModel.photosFiltered.observe(context as LifecycleOwner, Observer {
             Log.i(tag(), "get new photos")
             adapter.provider.items = it
         })
 
-        galleryViewModel.hasSelectedPhotos.observe(context as LifecycleOwner, Observer {
-            if (it) {
+        galleryViewModel.selectedPhotoSize.observe(context as LifecycleOwner, Observer {
+            mTvGalSelectAll.text = "${it} Selected"
+            if (it > 0) {
                 mTvGalleryRegisterSelected.show()
+                mCbGalSelectAll.isChecked = true
             } else {
                 mTvGalleryRegisterSelected.hide()
+                mCbGalSelectAll.isChecked = false
 
             }
         })
@@ -98,12 +104,12 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
             if (it == 1) {
                 mTvGalSelectAll.show(false)
                 mCbGalSelectAll.show(false)
-                mCbGalFilterRegistered.show(false)
+                mTvGalleryFilter.show(false)
                 mTvGalleryFilter.show(false)
             } else {
                 mTvGalSelectAll.show(true)
                 mCbGalSelectAll.show(true)
-                mCbGalFilterRegistered.show(true)
+                mTvGalleryFilter.show(true)
                 mTvGalleryFilter.show(true)
             }
             context?.let { context ->
@@ -222,7 +228,7 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
             galleryViewModel.isLoading.value!! -> {
                 return
             }
-            galleryViewModel.hasSelectedPhotos.value!! -> {
+            galleryViewModel.selectedPhotoSize.value!! != 0 -> {
                 mCbGalSelectAll.isChecked = false
                 galleryViewModel.unselectAll()
             }

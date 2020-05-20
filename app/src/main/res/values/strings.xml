@@ -8,7 +8,7 @@
     <string name="share">Share</string>
     <string name="done">Done</string>
     <string name="untagged_only">Untagged only</string>
-    <string name="mypage">Mypage</string>
+    <string name="mypage">MYPAGE</string>
     <string name="sign_out_small">Sign out</string>
     <string name="cancel">Cancel</string>
     <string name="sign_out_confirm_message">Are you sure you want to sign out?</string>
@@ -27,4 +27,6 @@
     <string name="premium_description" >- Tag photos (with permanent backup)\n- Edit Tags(with permanent backup)\n- Share photos\n- Share the repository</string>
     <string name="upgrade">Upgrade!</string>
     <string name="tag_empty_message">Tag must not be empty</string>
+    <string name="tagged_only">TAGGED ONLY</string>
+    <string name="all">ALL</string>
 </resources>

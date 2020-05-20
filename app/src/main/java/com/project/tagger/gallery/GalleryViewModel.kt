@@ -20,14 +20,8 @@ class GalleryViewModel(
 ) {
     private val photos = MutableLiveData<List<PhotoViewItem>>()
 
-    val photosFiltered = Transformations.map(photos) {
-        if (filterEnabled) {
-            it.filter { !it.galleryEntity.isRegistered }
-        } else {
-            it
-        }
-    }
-    val hasSelectedPhotos = MutableLiveData<Boolean>().apply { value = false }
+
+    val selectedPhotoSize = MutableLiveData<Int>().apply { value = 0 }
     val selectedPhotos = mutableSetOf<GalleryEntity>()
     val defaultPath: String = ""
     val folderStack = Stack<String>()
@@ -35,7 +29,15 @@ class GalleryViewModel(
 
     val isLoading = MutableLiveData<Boolean>().apply { value = false }
 
-    var filterEnabled = false
+    val filterEnabled = MutableLiveData<Boolean>().apply { value = false }
+
+    val photosFiltered = Transformations.map(photos) {
+        if (filterEnabled.value!!) {
+            it.filter { !it.galleryEntity.isRegistered }
+        } else {
+            it
+        }
+    }
 
     fun showLoading(show: Boolean) {
         isLoading.postValue(show)
@@ -96,11 +98,6 @@ class GalleryViewModel(
         updateSelected()
     }
 
-    fun selectAll() {
-        selectedPhotos.addAll(photos.value!!.map { it.galleryEntity }.filter { !it.isDirectory })
-        updateSelected()
-    }
-
     fun goBack() {
         Log.i(tag(), "goBack")
         folderStack.pop()
@@ -119,7 +116,7 @@ class GalleryViewModel(
     private fun updateSelected() {
         Log.i(tag(), "${selectedPhotos.size} selectedPhotos")
 
-        hasSelectedPhotos.value = selectedPhotos.isNotEmpty()
+        selectedPhotoSize.value = selectedPhotos.size
         photos.value?.let {
             val newPhotos = it.map {
                 if (selectedPhotos.contains(it.galleryEntity)) {
@@ -137,8 +134,8 @@ class GalleryViewModel(
         }
     }
 
-    fun enableRegisterFilter(checked: Boolean) {
-        filterEnabled = checked
+    fun toggleRegisterFilter() {
+        filterEnabled.value = !filterEnabled.value!!
         photos.value = photos.value
     }
 
