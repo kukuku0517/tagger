@@ -23,7 +23,7 @@ import org.koin.android.ext.android.inject
 
 class LoginActivity : AppCompatActivity() {
     val updateUserUC: UpdateUserUC by inject()
-    val getUserUC: GetUserUC by inject()
+
 
     companion object {
         const val RC_SIGN_IN = 1000
@@ -36,17 +36,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        getUserUC.execute()
-            .subscribeBy(onSuccess = {
-                startMainActivity()
-            }, onComplete = {
-                handleOnCreate()
-            }, onError = {
-                handleOnCreate()
-            })
-
-
+        handleOnCreate()
     }
 
     private fun handleOnCreate() {
@@ -128,5 +118,7 @@ class LoginActivity : AppCompatActivity() {
     private fun startMainActivity() {
         finish()
         startActivity(Intent(this, MainActivity::class.java))
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
+
 }

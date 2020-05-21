@@ -29,10 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
-import com.project.tagger.util.reduceIfEmpty
-import com.project.tagger.util.show
-import com.project.tagger.util.showInvisible
-import com.project.tagger.util.tag
+import com.project.tagger.util.*
 import com.project.tagger.util.widget.SelectorAdapter
 import com.project.tagger.util.widget.SelectorBottomSheetDialogBuilder
 import com.project.tagger.util.widget.SelectorItem
@@ -121,7 +118,8 @@ class RegisteredGalleryFragment : Fragment() {
                         }
 
                         containerView.mIvRegGalShare.setOnClickListener {
-                            shareImage(item.path)
+//                            shareImage(item.path)
+                            ShareUtil.shareImage(context, containerView.mIvRegGalGallery)
                         }
                     }
 
@@ -133,7 +131,8 @@ class RegisteredGalleryFragment : Fragment() {
                         } else {
                             Log.i(
                                 this@RegisteredGalleryFragment.tag(),
-                                "${item.tags.map { it.tag }.reduceIfEmpty("", { acc, tag -> "$acc $tag" })}"
+                                "${item.tags.map { it.tag }
+                                    .reduceIfEmpty("", { acc, tag -> "$acc $tag" })}"
                             )
                             if (galleryViewModel.repoAuthState.value == RegisteredGalleryViewModel.RepoUserState.VISITOR) {
                                 Toast.makeText(
@@ -172,7 +171,10 @@ class RegisteredGalleryFragment : Fragment() {
         mRvRegGal.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-
+        mRefreshRegGal.setOnRefreshListener {
+            mRefreshRegGal.isRefreshing = false
+            galleryViewModel.init()
+        }
         galleryViewModel.repos.observe(this, Observer { repo ->
             mIvRegGalRepo.setOnClickListener {
                 SelectorBottomSheetDialogBuilder(requireContext(), layoutInflater)
@@ -338,27 +340,27 @@ class RegisteredGalleryFragment : Fragment() {
         galleryViewModel.init()
     }
 
-    fun shareImage(path: String) {
-        val type = "image/*";
-        val imageFile = File(path)
-
-
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.type = type
-
-        val uri: Uri
-        uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(
-                requireContext(),
-                requireContext().getPackageName() + ".provider",
-                imageFile
-            )
-        } else {
-            Uri.fromFile(imageFile)
-        }
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
-        startActivityForResult(Intent.createChooser(intent, getString(R.string.share)), 100)
-    }
+//    fun shareImage(path: String) {
+//        val type = "image/*";
+//        val imageFile = File(path)
+//
+//
+//        val intent = Intent(Intent.ACTION_SEND)
+//        intent.type = type
+//
+//        val uri: Uri
+//        uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            FileProvider.getUriForFile(
+//                requireContext(),
+//                requireContext().getPackageName() + ".provider",
+//                imageFile
+//            )
+//        } else {
+//            Uri.fromFile(imageFile)
+//        }
+//        intent.putExtra(Intent.EXTRA_STREAM, uri)
+//        startActivityForResult(Intent.createChooser(intent, getString(R.string.share)), 100)
+//    }
 
 
 }

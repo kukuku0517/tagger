@@ -16,18 +16,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-9887170196921581~8452876640"/>
-        <activity android:name=".premium.PurchaseActivity"></activity>
-        <activity android:name=".registeredGallery.RegisteredDetailActivity"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".login.LoginActivity">
+        <activity android:name=".login.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-9887170196921581~8452876640" />
+
+        <activity android:name=".premium.PurchaseActivity" />
+        <activity
+            android:name=".registeredGallery.RegisteredDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".login.LoginActivity">
+
         </activity>
         <activity android:name=".main.MainActivity" />
 
