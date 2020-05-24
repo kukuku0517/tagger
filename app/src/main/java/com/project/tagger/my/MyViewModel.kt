@@ -25,6 +25,8 @@ class MyViewModel(
     val repos = MutableLiveData<List<RepoEntity>>()
     val signOutEvent = MutableLiveEvent(false)
     val signOutDialogEvent = MutableLiveEvent(false)
+    val toastEvent = MutableLiveEvent<String>()
+    val isLoading = MutableLiveData<Boolean>().apply { value = false }
 
     fun init() {
         userUC.execute()
@@ -42,7 +44,7 @@ class MyViewModel(
 
     }
 
-    fun signOutConfirmed(){
+    fun signOutConfirmed() {
 
         signOutUC.execute()
             .subscribeBy(
@@ -70,6 +72,46 @@ class MyViewModel(
                     Log.i(tag(), "Signout err ${it.message}")
                 }
             )
+    }
+
+    fun isMyRepo(repoEntity: RepoEntity): Boolean {
+        return repoEntity.owner == user.value!!.email
+    }
+
+    fun syncRepository(repoEntity: RepoEntity) {
+        if (isLoading.value == true) return
+
+        if (isMyRepo(repoEntity)) {
+            postRepoUC.execute(repoEntity)
+                .doOnSubscribe { isLoading.value = true }
+                .flatMap { getReposUC.execute() }
+                .subscribeBy(
+                    onSuccess = {
+                        isLoading.value = false
+                        repos.value = it
+                        toastEvent.value = "Upload Success"
+                    },
+                    onError = {
+
+                        isLoading.value = false
+                        Log.i(tag(), "Signout err ${it.message}")
+                    }
+                )
+        } else {
+            getReposUC.execute(true)
+                .doOnSubscribe { isLoading.value = true }
+                .subscribeBy(
+                    onSuccess = {
+                        isLoading.value = false
+                        repos.value = it
+                        toastEvent.value = "Download Success"
+                    },
+                    onError = {
+                        isLoading.value = false
+                        Log.i(tag(), "Signout err ${it.message}")
+                    }
+                )
+        }
     }
 
 }

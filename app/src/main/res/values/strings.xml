@@ -31,4 +31,6 @@
     <string name="all">ALL</string>
     <string name="find_repo_message">You can copy your repository id in the mypage tab.\nAsk your friends for the id and share photos!</string>
     <string name="sharetag"><b>SHARE</b>TAG</string>
+    <string name="ad_sorry">Sorry, unexpected error occurred. Please try again</string>
+    <string name="ad_loading_another">Loading another ad. Please try again</string>
 </resources>

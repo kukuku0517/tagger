@@ -54,19 +54,28 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
     var repoCache: Gateway<List<RepoEntity>>? = null
 
     override fun getRepos(user: UserEntity, refresh: Boolean): Single<List<RepoEntity>> {
-        if (refresh || true) {
+        if (refresh) {
             repoCache?.clearRequest()
-
+            repoCache = Gateway.from(
+                getReposFromServer(user).flatMap { updateReposLocal(user, it) }
+                    .switchIfEmpty(getDefaultRepos(user)
+                        .flatMap { updateReposServer(it) }
+                        .flatMap { updateReposLocal(user, it) }
+                    )
+                    .toSingle()
+            )
+        } else {
+            repoCache = repoCache ?: Gateway.from(
+                getReposFromLocal()
+                    .switchIfEmpty(getReposFromServer(user).flatMap { updateReposLocal(user, it) })
+                    .switchIfEmpty(getDefaultRepos(user)
+                        .flatMap { updateReposServer(it) }
+                        .flatMap { updateReposLocal(user, it) }
+                    )
+                    .toSingle()
+            )
         }
-        repoCache = repoCache ?: Gateway.from(
-            getReposFromLocal()
-                .switchIfEmpty(getReposFromServer(user).flatMap { updateReposLocal(user, it) })
-                .switchIfEmpty(getDefaultRepos(user)
-                    .flatMap { updateReposServer(it) }
-                    .flatMap { updateReposLocal(user, it) }
-                )
-                .toSingle()
-        )
+
         return repoCache!!
     }
 
@@ -136,7 +145,7 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
                 name = "${user.name}'s repository",
                 desc = "",
                 id = "${user.email}${user.name}".hashCode(),
-                thumb = user.profileUrl?:""
+                thumb = user.profileUrl ?: ""
             )
             Log.i(tag(), "getDefaultRepos ${defaultRepo.id} ${defaultRepo.name}")
 

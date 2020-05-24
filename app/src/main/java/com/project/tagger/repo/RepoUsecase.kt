@@ -43,11 +43,11 @@ data class RepoEntity(
 class GetReposUC(
     val repoRepository: RepoRepository,
     val getUserUC: GetUserUC
-) : UseCaseSingle<Void, List<RepoEntity>> {
-    override fun execute(params: Void?): Single<List<RepoEntity>> {
+) : UseCaseSingle<Boolean, List<RepoEntity>> {
+    override fun execute(params: Boolean?): Single<List<RepoEntity>> {
         return getUserUC.execute()
             .flatMapSingle { user ->
-                repoRepository.getRepos(user)
+                repoRepository.getRepos(user, params ?: false)
             }
             .doOnError { Log.w(tag(), it.message) }
     }

@@ -7,6 +7,20 @@ apply plugin: 'kotlin-kapt'
 
 android {
 
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\User\\Documents\\tagger_keystore.jks')
+            storePassword 'qkqhsha'
+            keyAlias = 'rabratory'
+            keyPassword 'qkqhsha'
+        }
+        release {
+            storeFile file('C:\\Users\\User\\Documents\\tagger_keystore.jks')
+            storePassword 'qkqhsha'
+            keyAlias = 'rabratory'
+            keyPassword 'qkqhsha'
+        }
+    }
     dataBinding {
         enabled = true
     }
