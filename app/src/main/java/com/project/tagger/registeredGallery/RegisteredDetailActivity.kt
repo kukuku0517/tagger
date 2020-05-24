@@ -77,7 +77,9 @@ class RegisteredDetailActivity : AppCompatActivity() {
         tagViewModel.repo = repo
         mIvRegDetailShare.setOnClickListener {
 //            ShareUtil.shareImage(this, photos.path)
-            ShareUtil.shareImage(this, mIvRegDetail)
+//            ShareUtil.shareImage(this, mIvRegDetail)
+
+            ShareUtil.shareImage(this, "${filesDir.path}/${photos.parseLocalPath()}")
         }
 
         mIvRegDetailDelete.setOnClickListener {

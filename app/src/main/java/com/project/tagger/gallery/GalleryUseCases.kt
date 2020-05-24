@@ -30,7 +30,11 @@ data class PhotoEntity(
     val usedAt: String = "2020-05-05T00:00:00",
     val sharedCount: Int = 0
 
-) : Parcelable
+) : Parcelable{
+    fun parseLocalPath(): String {
+        return "internal_${path.replace("/", "")}"
+    }
+}
 
 data class GalleryEntity(
     val path: String = "",

@@ -5,18 +5,20 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import com.google.firebase.storage.FirebaseStorage
 import com.project.tagger.database.*
 import com.project.tagger.repo.RepoEntity
+import com.project.tagger.util.LocalImageFileSaver
 import com.project.tagger.util.fromIO
+import com.project.tagger.util.tag
 import com.project.tagger.util.toUI
 import id.zelory.compressor.Compressor
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.io.File
-import java.io.FileFilter
+import java.io.*
 
 
 interface GalleryRepository {
@@ -218,8 +220,16 @@ class LocalGalleryRepository(
             }
 
             Single.just(photoWithTags.toEntity())
-        }.subscribeOn(Schedulers.io())
+        }
+            .doOnSuccess { savePhotoLocal(it) }
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun savePhotoLocal(photoEntity: PhotoEntity) {
+        val path = ("internal_" + photoEntity.path).replace("/", "")
+        val file = File(photoEntity.path)
+        LocalImageFileSaver.writeImage(context, path, file)
     }
 
     override fun registerReplace(repo: RepoEntity, params: PhotoEntity): Single<PhotoEntity> {

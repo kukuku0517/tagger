@@ -6,7 +6,7 @@ import com.project.tagger.gallery.PhotoEntity
 @Entity(tableName = "photo")
 data class PhotoPojo(
     @PrimaryKey
-    val id:String,
+    val id: String,
     val path: String,
     val remotePath: String?,
     val isDirectory: Boolean,
@@ -18,7 +18,11 @@ data class PhotoPojo(
     val usedAt: String = "2020-05-05T00:00:00",
     val sharedCount: Int = 0
 
-)
+) {
+    fun getLocalPath(): String {
+        return "internal_${path.replace("/", "")}"
+    }
+}
 
 @Entity(tableName = "tag")
 data class TagPOJO(
