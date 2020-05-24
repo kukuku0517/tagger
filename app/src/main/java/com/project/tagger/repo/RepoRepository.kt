@@ -65,6 +65,7 @@ class RepoRepositoryImpl(val context: Context, val appDatabase: AppDatabase) : R
                     .toSingle()
             )
         } else {
+            repoCache?.clearRequest()
             repoCache = repoCache ?: Gateway.from(
                 getReposFromLocal()
                     .switchIfEmpty(getReposFromServer(user).flatMap { updateReposLocal(user, it) })

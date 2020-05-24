@@ -8,12 +8,6 @@ apply plugin: 'kotlin-kapt'
 android {
 
     signingConfigs {
-        debug {
-            storeFile file('C:\\Users\\User\\Documents\\tagger_keystore.jks')
-            storePassword 'qkqhsha'
-            keyAlias = 'rabratory'
-            keyPassword 'qkqhsha'
-        }
         release {
             storeFile file('C:\\Users\\User\\Documents\\tagger_keystore.jks')
             storePassword 'qkqhsha'
@@ -117,6 +111,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:21.4.3'
     implementation 'com.google.android.gms:play-services-auth:18.0.0'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0'
 
     implementation "com.google.code.gson:gson:2.8.5"
     implementation 'com.google.guava:guava:27.0.1-android'
@@ -133,3 +128,4 @@ dependencies {
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'

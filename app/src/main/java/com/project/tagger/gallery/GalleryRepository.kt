@@ -1,5 +1,6 @@
 package com.project.tagger.gallery
 
+import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -75,6 +76,7 @@ class LocalGalleryRepository(
                     cursor.getString(cursor.getColumnIndex(projection[2]))
                 file = File(firstImage)
                 if (file.exists() && !bucketSet.contains(bucketName)) {
+                    Log.i("kjh", "parentfile ${file.parentFile}")
                     val images = file.parentFile?.listFiles(ImageFileFilter()) ?: arrayOf()
                     buckets.add(
                         GalleryEntity(
@@ -110,24 +112,33 @@ class LocalGalleryRepository(
         if (cursor != null) {
             var file: File
             while (cursor.moveToNext()) {
-                val path = cursor.getString(cursor.getColumnIndex(projection[0]))
-                file = File(path)
-                if (file.exists() && !images.contains(path)) {
-                    images.add(path)
-                    photos.add(
-                        GalleryEntity(
-                            path,
-                            false,
 
-                            path,
-                            false,
-                            0,
-                            0,
-                            null
+                val path = cursor.getString(cursor.getColumnIndex(projection[0]))
+//                val id = cursor.getColumnIndex(projection[0])
+//                ContentUris.withAppendedId(
+//                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                    cursor.getLong(id)
+//                ).path?.let { path ->
+
+                    file = File(path)
+                    if (file.exists() && !images.contains(path)) {
+                        images.add(path)
+                        photos.add(
+                            GalleryEntity(
+                                path,
+                                false,
+
+                                path,
+                                false,
+                                0,
+                                0,
+                                null
+                            )
                         )
-                    )
+                    }
                 }
-            }
+
+//            }
             cursor.close()
         }
         return photos
