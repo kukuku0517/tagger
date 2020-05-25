@@ -33,4 +33,9 @@
     <string name="sharetag"><b>SHARE</b>TAG</string>
     <string name="ad_sorry">Sorry, unexpected error occurred. Please try again</string>
     <string name="ad_loading_another">Loading another ad. Please try again</string>
+    <string name="update">Update</string>
+    <string name="exit">Exit</string>
+    <string name="do_it_later">Do it later</string>
+    <string name="update_notice">Update notice</string>
+    <string name="update_message">App has new features to update.\nAre you willing to update now?\n</string>
 </resources>

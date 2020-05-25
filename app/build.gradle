@@ -7,14 +7,6 @@ apply plugin: 'kotlin-kapt'
 
 android {
 
-    signingConfigs {
-        release {
-            storeFile file('C:\\Users\\User\\Documents\\tagger_keystore.jks')
-            storePassword 'qkqhsha'
-            keyAlias = 'rabratory'
-            keyPassword 'qkqhsha'
-        }
-    }
     dataBinding {
         enabled = true
     }
@@ -25,7 +17,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -124,6 +116,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-ads:19.1.0'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation 'com.google.firebase:firebase-config:19.1.4'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 apply plugin: 'com.android.application'
