@@ -18,16 +18,35 @@
         android:layout_margin="16dp"
         android:text="Tag your photos" />
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mRvTagPhotos"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:requiresFadingEdge="horizontal" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="@string/tagged"
+        android:layout_height="wrap_content"/>
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/mCgTag"
         android:layout_width="match_parent"
         app:flMaxRows="2"
+        android:layout_height="wrap_content">
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="@string/recommended"
+        android:layout_marginTop="4dp"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/mCgTagRecommend"
+        android:layout_width="match_parent"
+        app:flMaxRows="1"
         android:layout_height="wrap_content">
 
     </com.google.android.material.chip.ChipGroup>

@@ -13,6 +13,8 @@ import com.project.tagger.util.tag
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import java.util.ArrayList
+import kotlin.math.max
+import kotlin.math.min
 
 data class TagViewItem(
     val tag: TagEntity,
@@ -34,24 +36,39 @@ class TagViewModel(
 ) {
     var photos: List<PhotoEntity> = listOf()
     val tags = MutableLiveData<MutableSet<TagViewItem>>().apply { value = mutableSetOf() }
+    val recommendedTags =
+        MutableLiveData<MutableSet<TagViewItem>>().apply { value = mutableSetOf() }
+
     val finishEvent = MutableLiveEvent(false)
     var repo: RepoEntity? = null
 
     fun setTags(tags: ArrayList<TagEntity>?) {
-        if (tags.isNullOrEmpty()) {
-            getPopularTagsUC.execute()
-                .map { it.map { TagViewItem(it, isSelected = false) } }
-        } else {
+
+        if (tags != null) {
             Single.just(tags)
                 .map { it.map { TagViewItem(it, isSelected = true) } }
+                .doOnSubscribe { isLoading.value = true }
+                .subscribeBy(
+                    onSuccess = {
+                        isLoading.value = false
+                        this.tags.value =
+                            this.tags.value!!.apply { addAll(it) }.sortedBy { it.tag.tag }
+                                .toMutableSet()
+                    },
+                    onError = {
+                        isLoading.value = false
+                        Log.i(tag(), it.message)
+                    })
         }
-            .doOnSubscribe { isLoading.value = true }
 
+        getPopularTagsUC.execute()
+            .map { it.map { TagViewItem(it, isSelected = false) }.subList(0, min(10, it.size)) }
             .subscribeBy(
                 onSuccess = {
                     isLoading.value = false
-                    this.tags.value = this.tags.value!!.apply { addAll(it) }.sortedBy { it.tag.tag }
-                        .toMutableSet()
+                    this.recommendedTags.value =
+                        this.recommendedTags.value!!.apply { addAll(it) }.sortedBy { it.tag.tag }
+                            .toMutableSet()
                 },
                 onError = {
                     isLoading.value = false
@@ -73,6 +90,7 @@ class TagViewModel(
             remove(item)
             add(item)
         }.sortedBy { it.tag.tag }.toMutableSet()
+
     }
 
     fun removeTag(text: String) {

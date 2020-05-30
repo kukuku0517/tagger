@@ -131,7 +131,7 @@ fun Completable.toUI(): Completable {
     return this.observeOn(AndroidSchedulers.mainThread())
 }
 
-public inline fun <S, T : S> Iterable<T>.reduceIfEmpty(default:S, operation: (acc: S, T) -> S): S {
+public inline fun <S, T : S> Iterable<T>.reduceIfEmpty(default: S, operation: (acc: S, T) -> S): S {
     val iterator = this.iterator()
     if (!iterator.hasNext()) return default
     var accumulator: S = iterator.next()
@@ -139,4 +139,9 @@ public inline fun <S, T : S> Iterable<T>.reduceIfEmpty(default:S, operation: (ac
         accumulator = operation(accumulator, iterator.next())
     }
     return accumulator
+}
+
+fun Int.modPositive(divider: Int): Int {
+    val rem = this.rem(divider)
+    return if (rem < 0) rem + divider else rem
 }

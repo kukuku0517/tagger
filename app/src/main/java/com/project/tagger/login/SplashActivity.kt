@@ -65,7 +65,7 @@ class SplashActivity : AppCompatActivity() {
 
             val currentVersion = packageManager.getPackageInfo(packageName, 0).versionName
             val latestVersion = versionInfo.minVersion
-            if (VersionUtil.compare(currentVersion, latestVersion) < 0) {
+            if (VersionUtil.compare(currentVersion, latestVersion) <= 0) {
                 Completable.complete()
             } else {
                 AlertObservable.create(this, object : AlertObservable.AlertObservableListener() {

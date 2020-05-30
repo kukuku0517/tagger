@@ -24,6 +24,7 @@ import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.gallery.TagEntity
 import com.project.tagger.repo.RepoEntity
 import com.project.tagger.util.ShareUtil
+import com.project.tagger.util.modPositive
 import com.project.tagger.util.show
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
@@ -115,7 +116,7 @@ class RegisteredDetailActivity : AppCompatActivity() {
                             chipBackgroundColor = ColorStateList.valueOf(
                                 ContextCompat.getColor(
                                     context,
-                                    tagColors[tag.hashCode() % tagColors.size]
+                                    tagColors[tag.hashCode().modPositive(tagColors.size)]
                                 )
                             )
                             text = tag.tag.tag

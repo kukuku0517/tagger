@@ -27,7 +27,7 @@
     <string name="premium_description">- Tag photos (with permanent backup)\n- Edit Tags(with permanent backup)\n- Share photos\n- Share the repository</string>
     <string name="upgrade">Upgrade!</string>
     <string name="tag_empty_message">Tag must not be empty</string>
-    <string name="tagged_only">SHOW TAGGED ONLY</string>
+    <string name="tagged_only">SHOW UNTAGGED ONLY</string>
     <string name="all">SHOW ALL</string>
     <string name="find_repo_message">You can copy your repository id in the mypage tab.\nAsk your friends for the id and share photos!</string>
     <string name="sharetag"><b>SHARE</b>TAG</string>
@@ -44,5 +44,7 @@
     <string name="request_permission_message">To use this app, we need your permissions.\n</string>
     <string name="no_tagged_photos">No tagged photos. Tag a photo from your gallery</string>
     <string name="account">account</string>
+    <string name="tagged">Tagged :</string>
+    <string name="recommended">Recommended :</string>
 
 </resources>

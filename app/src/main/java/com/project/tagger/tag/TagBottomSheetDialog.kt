@@ -21,6 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.project.tagger.gallery.TagEntity
 import com.project.tagger.repo.RepoEntity
+import com.project.tagger.util.modPositive
 import com.project.tagger.util.show
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
@@ -64,6 +65,7 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
         dismissListener?.invoke()
         super.onDismiss(dialog)
     }
+
     val tagViewModel: TagViewModel by inject()
     val tagColors = listOf(
         R.color.tag_color_0,
@@ -146,7 +148,7 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
                             chipBackgroundColor = ColorStateList.valueOf(
                                 ContextCompat.getColor(
                                     context,
-                                    tagColors[tag.hashCode() % tagColors.size]
+                                    tagColors[tag.tag.tag.hashCode().modPositive(tagColors.size)]
                                 )
                             )
                             text = tag.tag.tag
@@ -164,6 +166,35 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
                 )
             }
         })
+
+
+        tagViewModel.recommendedTags.observe(this, Observer { tags ->
+            mCgTagRecommend.removeAllViews()
+            tags.forEach { tag ->
+                mCgTagRecommend.addView(
+                    (layoutInflater.inflate(
+                        R.layout.chip_filter_layout,
+                        mCgTagRecommend,
+                        false
+                    ) as Chip)
+                        .apply {
+                            chipBackgroundColor = ColorStateList.valueOf(
+                                ContextCompat.getColor(
+                                    context,
+                                    R.color.grey
+                                )
+                            )
+                            text = tag.tag.tag
+                            isCheckable = false
+                            setOnClickListener {
+                                tagViewModel.addTag(tag.tag.tag)
+                            }
+                        }
+                )
+            }
+        })
+
+
         tagViewModel.finishEvent.observe(this, Observer {
             if (it) {
                 dismiss()

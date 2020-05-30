@@ -29,7 +29,7 @@ class GalleryViewModel(
 
     val isLoading = MutableLiveData<Boolean>().apply { value = false }
 
-    val filterEnabled = MutableLiveData<Boolean>().apply { value = false }
+    val filterEnabled = MutableLiveData<Boolean>().apply { value = true }
 
     val photosFiltered = Transformations.map(photos) {
         if (filterEnabled.value!!) {
