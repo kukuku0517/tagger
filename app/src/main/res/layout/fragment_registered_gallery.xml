@@ -162,7 +162,7 @@
                 android:id="@+id/mTvRegGalEmpty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No tagged photos.\nTag a photo from your gallery"
+                android:text="@string/no_tagged_photos"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"

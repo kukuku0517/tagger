@@ -133,7 +133,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Account"
+                    android:text="@string/account"
                     app:layout_constraintLeft_toLeftOf="parent"
 
                     app:layout_constraintTop_toTopOf="parent" />

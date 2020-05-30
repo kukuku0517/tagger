@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:padding="8dp"
-        android:text="Sign in with google"
+        android:text="@string/sign_in_with_google"
         app:icon="@drawable/google_logo"
         app:iconSize="40dp"
 
