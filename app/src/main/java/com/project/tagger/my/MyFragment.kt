@@ -79,9 +79,10 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
 
     private lateinit var mRewardedVideoAd: RewardedVideoAd
     var pendingRepo: RepoEntity? = null
+    var errorCount = 0
 
     private fun loadRewardedVideoAd() {
-       mRewardedVideoAd.loadAd(
+        mRewardedVideoAd.loadAd(
             if (BuildConfig.DEBUG)
                 "ca-app-pub-3940256099942544/5224354917"
             else
@@ -94,8 +95,9 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
         pendingRepo = repoEntity
         if (mRewardedVideoAd.isLoaded) {
             mRewardedVideoAd.show()
-        }else{
-            Toast.makeText(context, getString(R.string.ad_loading_another), Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, getString(R.string.ad_loading_another), Toast.LENGTH_SHORT)
+                .show()
             loadRewardedVideoAd()
         }
     }
@@ -248,7 +250,9 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
         if (pendingRepo != null) {
             myViewModel.syncRepository(pendingRepo!!)
             pendingRepo = null
+            errorCount = 0
         } else {
+            errorCount++
             Toast.makeText(
                 context,
                 "Sorry, unexpected error occurred. Please try again",
@@ -262,10 +266,12 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
 
     override fun onRewardedVideoAdFailedToLoad(p0: Int) {
         Log.i(tag(), "onRewardedVideoAdFailedToLoad ${p0}")
-        if (pendingRepo != null) {
+        if (pendingRepo != null && errorCount > 3) {
+            errorCount = 0
             myViewModel.syncRepository(pendingRepo!!)
             pendingRepo = null
         } else {
+            errorCount++
             Toast.makeText(
                 context,
                 getString(R.string.ad_sorry),
