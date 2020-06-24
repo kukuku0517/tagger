@@ -9,11 +9,14 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.project.tagger.BuildConfig
 import com.project.tagger.R
 import com.project.tagger.gallery.GalleryFragment
 import com.project.tagger.my.MyFragment
 import com.project.tagger.registeredGallery.RegisteredGalleryFragment
+import com.project.tagger.util.EventKey
+import com.project.tagger.util.FA
 import com.project.tagger.util.Initializer
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
@@ -29,9 +32,9 @@ class MainActivity : AppCompatActivity() {
         val mAdView = AdView(this)
         mAdView.adSize = AdSize.BANNER
         val adRequest = AdRequest.Builder().build()
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             mAdView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
-        }else{
+        } else {
             mAdView.adUnitId = "ca-app-pub-9887170196921581/2335218521"
         }
         mLayoutAdView.addView(mAdView)
@@ -53,6 +56,11 @@ class MainActivity : AppCompatActivity() {
                     override fun onTabSelected(tab: TabLayout.Tab?) {
                         if (tab != null) {
                             mVpMain.currentItem = tab.position
+                            when (tab.position) {
+                                0 -> FA.logData(EventKey.TAB_REPO)
+                                1 -> FA.logData(EventKey.TAB_GALLERY)
+                                2 -> FA.logData(EventKey.TAB_MY)
+                            }
                         }
                     }
 

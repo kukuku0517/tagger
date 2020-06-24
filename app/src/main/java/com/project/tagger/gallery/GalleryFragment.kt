@@ -16,6 +16,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.project.tagger.R
 import com.project.tagger.main.MainPagerAdapter
 import com.project.tagger.tag.TagBottomSheetDialog
+import com.project.tagger.util.EventKey
+import com.project.tagger.util.FA
 import com.project.tagger.util.show
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
@@ -45,6 +47,9 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
         super.onViewCreated(view, savedInstanceState)
 
         mTvGalleryRegisterSelected.setOnClickListener {
+
+            FA.logData(EventKey.gallery_new)
+
             fragmentManager?.let { it1 ->
                 TagBottomSheetDialog.create(
                     galleryViewModel.selectedPhotos.toMutableList().map {
@@ -71,6 +76,8 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
         }
 
         mTvGalleryFilter.setOnClickListener {
+
+            FA.logData(EventKey.gallery_toggle_tagged_option)
             galleryViewModel.toggleRegisterFilter()
         }
 
@@ -178,6 +185,8 @@ class GalleryFragment : Fragment(), MainPagerAdapter.FragmentBackPressListener {
 
                 override fun onClick(adapterPosition: Int) {
                     val item = items[adapterPosition]
+
+                    FA.logData(EventKey.gallery_item_click)
                     if (item.galleryEntity.isDirectory) {
                         Log.i(this@GalleryFragment.tag(), "onClick ${item.galleryEntity.path}")
                         galleryViewModel.init(item.galleryEntity.path)

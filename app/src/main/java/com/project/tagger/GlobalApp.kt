@@ -1,6 +1,7 @@
 package com.project.tagger
 
 import android.app.Application
+import android.content.Context
 import com.project.tagger.database.AppDatabase
 import com.project.tagger.database.PreferenceModel
 import com.project.tagger.database.PreferenceModelImpl
@@ -23,8 +24,13 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 
 class GlobalApp : Application() {
+    companion object{
+        var globalContext: Context? = null
+    }
     override fun onCreate() {
         super.onCreate()
+        globalContext = applicationContext
+
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this)
         }

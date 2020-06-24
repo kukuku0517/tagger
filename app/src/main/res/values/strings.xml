@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tagger</string>
+    <string name="app_name">ShareTag</string>
     <string name="search_tags">Search tags</string>
     <string name="select_all">SELECT ALL</string>
     <string name="navigate">GALLERY</string>

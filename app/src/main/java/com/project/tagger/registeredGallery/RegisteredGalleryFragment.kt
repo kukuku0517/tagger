@@ -136,9 +136,14 @@ class RegisteredGalleryFragment : Fragment() {
                         }
 
                         containerView.mIvRegGalShare.setOnClickListener {
+                            FA.logData(EventKey.repo_item_share)
+
                             //                            shareImage(item.path)
 //                            ShareUtil.shareImage(context, containerView.mIvRegGalGallery)
-                            ShareUtil.shareImage(context, "${context.filesDir.path}/${item.parseLocalPath()}")
+                            ShareUtil.shareImage(
+                                context,
+                                "${context.filesDir.path}/${item.parseLocalPath()}"
+                            )
                         }
                     }
 
@@ -148,6 +153,8 @@ class RegisteredGalleryFragment : Fragment() {
                             Log.i(this@RegisteredGalleryFragment.tag(), "onClick ${item.path}")
 
                         } else {
+                            FA.logData(EventKey.repo_item_click)
+
                             Log.i(
                                 this@RegisteredGalleryFragment.tag(),
                                 "${item.tags.map { it.tag }
@@ -196,6 +203,8 @@ class RegisteredGalleryFragment : Fragment() {
         }
         galleryViewModel.repos.observe(this, Observer { repo ->
             mIvRegGalRepo.setOnClickListener {
+                FA.logData(EventKey.repo_repo_select)
+
                 SelectorBottomSheetDialogBuilder(requireContext(), layoutInflater)
                     .setTitle("Select a repository")
                     .setItems(repo.map { SelectorItem(it.name) })
@@ -249,7 +258,10 @@ class RegisteredGalleryFragment : Fragment() {
                 })
 
         mIvRegGalSearch.setOnClickListener {
+            FA.logData(EventKey.repo_tag_search)
+
             galleryViewModel.toggleSearch()
+
         }
 
         mRvRegGal.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -365,10 +377,12 @@ class RegisteredGalleryFragment : Fragment() {
                 //TODO using view.tag to pass data
                 if (chip != null) {
                     galleryViewModel.query(listOf(chip.tag as String))
+                    FA.logData(EventKey.repo_tag_click, mapOf("chip" to chip.tag as String))
                 } else {
                     galleryViewModel.query(listOf(""))
-
+                    FA.logData(EventKey.repo_tag_click, mapOf("chip" to ""))
                 }
+
             }
             tags.forEach { tag ->
                 mChipGroupRegGal.addView(

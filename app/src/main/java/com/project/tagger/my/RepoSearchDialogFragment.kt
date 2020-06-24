@@ -9,6 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.project.tagger.R
+import com.project.tagger.util.EventKey
+import com.project.tagger.util.FA
 import com.project.tagger.util.show
 import kotlinx.android.synthetic.main.dialog_repo_search.*
 import kotlinx.android.synthetic.main.item_repo.view.*
@@ -111,6 +113,8 @@ class RepoSearchDialogFragment : DialogFragment() {
             }
         })
         mTvSearchRepoConfirm.setOnClickListener {
+            FA.logData(EventKey.mypage_add_repo)
+
             repoSearchViewModel.addRepo()
         }
     }

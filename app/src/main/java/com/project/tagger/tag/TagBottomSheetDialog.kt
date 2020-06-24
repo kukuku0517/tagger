@@ -21,9 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.project.tagger.gallery.TagEntity
 import com.project.tagger.repo.RepoEntity
-import com.project.tagger.util.modPositive
-import com.project.tagger.util.show
-import com.project.tagger.util.tag
+import com.project.tagger.util.*
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
 import kotlinx.android.synthetic.main.dialog_tag_bottom_sheet.*
 import kotlinx.android.synthetic.main.item_tag_gallery.view.*
@@ -63,6 +61,8 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         dismissListener?.invoke()
+        FA.logData(EventKey.tagsheet_cancel)
+
         super.onDismiss(dialog)
     }
 
@@ -87,6 +87,8 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
         val photos: ArrayList<PhotoEntity>? = arguments?.getParcelableArrayList<PhotoEntity>(PHOTOS)
         val repo = arguments?.getParcelable<RepoEntity>(REPO)
         val tags: ArrayList<TagEntity>? = arguments?.getParcelableArrayList<TagEntity>(TAG)
+
+        FA.logData(EventKey.tagsheet_start)
         if (photos == null || repo == null) {
             dismiss()
         }
@@ -198,6 +200,7 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
         tagViewModel.finishEvent.observe(this, Observer {
             if (it) {
                 dismiss()
+                FA.logData(EventKey.tagsheet_complete)
             }
         })
         tagViewModel.isLoading.observe(this, Observer {
@@ -220,4 +223,6 @@ class TagBottomSheetDialog private constructor() : BottomSheetDialogFragment() {
             tagViewModel.updateTags()
         }
     }
+
+
 }

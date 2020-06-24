@@ -16,6 +16,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.project.tagger.util.EventKey
+import com.project.tagger.util.FA
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_login.*
 import org.koin.android.ext.android.inject
@@ -37,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleOnCreate()
+        FA.logData(EventKey.SCREEN_LOGIN)
     }
 
     private fun handleOnCreate() {
@@ -48,6 +51,8 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         mTvSignIn.setOnClickListener {
+
+            FA.logData(EventKey.login_signupgoogle)
             signIn()
         }
     }
@@ -64,10 +69,13 @@ class LoginActivity : AppCompatActivity() {
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
+                FA.logData(EventKey.login_signupgoogle_complete)
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account!!)
             } catch (e: ApiException) {
+
+                FA.logData(EventKey.login_signupgoogle_cancel, mapOf("error" to  e.message))
                 // Google Sign In failed, update UI appropriately
                 Log.w(tag(), "Google sign in failed", e)
                 // ...

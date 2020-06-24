@@ -31,6 +31,8 @@ import com.project.tagger.databinding.FragmentMyBinding
 import com.project.tagger.login.LoginActivity
 import com.project.tagger.premium.PurchaseActivity
 import com.project.tagger.repo.RepoEntity
+import com.project.tagger.util.EventKey
+import com.project.tagger.util.FA
 import com.project.tagger.util.tag
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
 import com.project.tagger.util.widget.TransparentDialog
@@ -128,6 +130,7 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
                     getString(R.string.photo_unit).format(item.photos.size)
                 Glide.with(requireContext()).load(item.thumb).into(containerView.mIvRepoItemThumb)
                 containerView.mIvRepoItemShare.setOnClickListener {
+                    FA.logData(EventKey.mypage_copy)
 
                     val clipboardManager: ClipboardManager =
                         requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -150,6 +153,7 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
                     //                    if ) {
 //                        myViewModel.syncRepository(item)
 //                    } else {
+                    FA.logData(EventKey.mypage_upload)
                     showRewardedVideoAd(item)
 //                    }
                 }
@@ -159,6 +163,7 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
             override fun onClick(adapterPosition: Int) {
                 if (!items[adapterPosition].backUp) {
                     checkForPremium(items[adapterPosition])
+                    FA.logData(EventKey.mypage_click_for_premium)
                 }
 
 
@@ -177,6 +182,8 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
         mRvMyRepo.layoutManager = LinearLayoutManager(requireContext())
 
         mBtnMyAddRepo.setOnClickListener {
+            FA.logData(EventKey.mypage_find_repo)
+
             fragmentManager?.let { it1 -> RepoSearchDialogFragment().show(it1, "RepoSearch") }
         }
         myViewModel.repos.observe(context as LifecycleOwner, Observer {
@@ -194,10 +201,13 @@ class MyFragment : Fragment(), RewardedVideoAdListener {
 
         myViewModel.signOutDialogEvent.observe(context as LifecycleOwner, Observer {
             if (it) {
+
                 AlertDialog.Builder(requireContext())
                     .setTitle(getString(R.string.sign_out_small))
                     .setMessage(getString(R.string.sign_out_confirm_message))
                     .setPositiveButton(getString(R.string.sign_out_small)) { d, _ ->
+                        FA.logData(EventKey.mypage_logout)
+
                         myViewModel.signOutConfirmed()
                         d.dismiss()
                     }

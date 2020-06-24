@@ -23,10 +23,7 @@ import com.project.tagger.R
 import com.project.tagger.gallery.PhotoEntity
 import com.project.tagger.gallery.TagEntity
 import com.project.tagger.repo.RepoEntity
-import com.project.tagger.util.ShareUtil
-import com.project.tagger.util.modPositive
-import com.project.tagger.util.show
-import com.project.tagger.util.tag
+import com.project.tagger.util.*
 import com.project.tagger.util.widget.SimpleRecyclerViewAdapter
 import kotlinx.android.synthetic.main.activity_registered_detail.*
 import kotlinx.android.synthetic.main.item_tag_gallery.view.*
@@ -77,13 +74,15 @@ class RegisteredDetailActivity : AppCompatActivity() {
 
         tagViewModel.repo = repo
         mIvRegDetailShare.setOnClickListener {
-//            ShareUtil.shareImage(this, photos.path)
+            //            ShareUtil.shareImage(this, photos.path)
 //            ShareUtil.shareImage(this, mIvRegDetail)
 
+            FA.logData(EventKey.regdetail_share)
             ShareUtil.shareImage(this, "${filesDir.path}/${photos.parseLocalPath()}")
         }
 
         mIvRegDetailDelete.setOnClickListener {
+            FA.logData(EventKey.regdetail_delete)
             AlertDialog.Builder(this)
                 .setTitle("Delete photo")
                 .setMessage("Are you sure you want to delete this photo?")
@@ -147,10 +146,15 @@ class RegisteredDetailActivity : AppCompatActivity() {
         mEtRegDetail.setOnEditorActionListener { v, actionId, event ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE -> {
+                    FA.logData(EventKey.regdetail_add_tag_done)
                     val text = mEtRegDetail.text.toString()
-                    if (text.isBlank()){
-                        Toast.makeText(this, getString(R.string.tag_empty_message),Toast.LENGTH_LONG).show()
-                    }else{
+                    if (text.isBlank()) {
+                        Toast.makeText(
+                            this,
+                            getString(R.string.tag_empty_message),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
                         tagViewModel.addTag(text)
                         mEtRegDetail.text = null
                     }
@@ -161,6 +165,8 @@ class RegisteredDetailActivity : AppCompatActivity() {
         }
 
         mTvRegDetailComplete.setOnClickListener {
+
+            FA.logData(EventKey.regdetail_complete)
             tagViewModel.updateTags()
         }
     }
