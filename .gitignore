@@ -16,5 +16,5 @@ google-services.json
 gradle.properties
 output.json
 *.apk
-*.abb
+*.aab
 *.jks
